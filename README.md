@@ -40,6 +40,7 @@ A NestJS TypeScript starter project with user authentication, following best pra
 - Node.js (v14 or later)
 - npm or yarn
 - PostgreSQL database
+- Docker and Docker Compose (optional, for containerized setup)
 
 ## Installation
 
@@ -251,6 +252,50 @@ This project is configured with Codecov Test Analytics to provide insights into 
 - Detection of flaky tests that fail intermittently
 
 Test results are automatically uploaded to Codecov during CI runs via GitHub Actions. The workflow generates JUnit XML test reports and uploads them alongside coverage reports using the Codecov Test Results Action.
+## Docker Setup
+
+This project includes Docker support for easy deployment and development.
+
+### Using Docker Compose
+
+```bash
+# Start all services (app and database)
+$ docker-compose up -d
+
+# View logs
+$ docker-compose logs -f
+
+# Stop all services
+$ docker-compose down
+
+# Rebuild containers after making changes to Dockerfile
+$ docker-compose up -d --build
+```
+
+### Environment Variables for Docker
+
+When using Docker, you can configure these additional environment variables in your `.env` file:
+
+```env
+# PostgreSQL Docker Configuration
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=nestjs
+
+# Redis Configuration
+# For Docker environment, use the service name
+REDIS_HOST=redis  # Use 'localhost' for local development
+```
+
+### Building the Docker Image Separately
+
+```bash
+# Build the image
+$ docker build -t nestjs-starter .
+
+# Run the container
+$ docker run -p 3000:3000 --env-file .env nestjs-starter
+```
 
 ## License
 
