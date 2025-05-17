@@ -1,17 +1,17 @@
 # CodeRabbit Configuration
 language: en-US
-tone_instructions: ""  # Example: 'Use a friendly, helpful tone'
+tone_instructions: '' # Example: 'Use a friendly, helpful tone'
 early_access: true
 enable_free_tier: true
 
 reviews:
-  profile: assertive  # Options: chill, assertive
+  profile: assertive # Options: chill, assertive
   request_changes_workflow: true
   high_level_summary: true
-  high_level_summary_placeholder: "@coderabbitai summary"
+  high_level_summary_placeholder: '@coderabbitai summary'
   high_level_summary_in_walkthrough: false
-  auto_title_placeholder: "@coderabbitai"
-  auto_title_instructions: ""
+  auto_title_placeholder: '@coderabbitai'
+  auto_title_instructions: ''
   review_status: true
   commit_status: true
   fail_commit_status: false
@@ -87,7 +87,7 @@ reviews:
       enabled_categories: []
       disabled_categories: []
       enabled_only: false
-      level: default  # Options: default, picky
+      level: default # Options: default, picky
 
     biome:
       enabled: true
@@ -97,7 +97,7 @@ reviews:
 
     swiftlint:
       enabled: true
-      config_file: ""
+      config_file: ''
 
     phpstan:
       enabled: true
@@ -105,7 +105,7 @@ reviews:
 
     golangci-lint:
       enabled: true
-      config_file: ""
+      config_file: ''
 
     yamllint:
       enabled: true
@@ -118,7 +118,7 @@ reviews:
 
     detekt:
       enabled: true
-      config_file: ""
+      config_file: ''
 
     eslint:
       enabled: true
@@ -137,14 +137,14 @@ reviews:
 
     pmd:
       enabled: true
-      config_file: ""
+      config_file: ''
 
     cppcheck:
       enabled: true
 
     semgrep:
       enabled: true
-      config_file: ""
+      config_file: ''
 
     circleci:
       enabled: true
@@ -166,9 +166,9 @@ chat:
   auto_reply: true
   integrations:
     jira:
-      usage: auto  # Options: auto, enabled, disabled
+      usage: auto # Options: auto, enabled, disabled
     linear:
-      usage: auto  # Options: auto, enabled, disabled
+      usage: auto # Options: auto, enabled, disabled
 
 # Knowledge base configuration
 knowledge_base:
@@ -176,17 +176,17 @@ knowledge_base:
   web_search:
     enabled: true
   learnings:
-    scope: auto  # Options: local, global, auto
+    scope: auto # Options: local, global, auto
   issues:
-    scope: auto  # Options: local, global, auto
+    scope: auto # Options: local, global, auto
   jira:
-    usage: auto  # Options: auto, enabled, disabled
+    usage: auto # Options: auto, enabled, disabled
     project_keys: []
   linear:
-    usage: auto  # Options: auto, enabled, disabled
+    usage: auto # Options: auto, enabled, disabled
     team_keys: []
   pull_requests:
-    scope: auto  # Options: local, global, auto
+    scope: auto # Options: local, global, auto
 
 # Code generation configuration
 code_generation:

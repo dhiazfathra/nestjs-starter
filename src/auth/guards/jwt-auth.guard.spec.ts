@@ -12,8 +12,8 @@ jest.mock('@nestjs/passport', () => ({
 }));
 
 // Import after mocking to ensure the mock is used
-import { JwtAuthGuard } from './jwt-auth.guard';
 import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 describe('JwtAuthGuard', () => {
   let jwtAuthGuard: JwtAuthGuard;

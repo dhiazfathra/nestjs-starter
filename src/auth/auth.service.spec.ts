@@ -1,9 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthService } from './auth.service';
-import { UsersService } from '../users/users.service';
-import { JwtService } from '@nestjs/jwt';
 import { UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Role } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { UsersService } from '../users/users.service';
+import { AuthService } from './auth.service';
 
 jest.mock('bcrypt');
 
@@ -48,11 +49,14 @@ describe('AuthService', () => {
         id: '1',
         email: 'test@example.com',
         password: 'hashedPassword',
-        name: 'Test User',
-        role: 'USER',
+        firstName: 'Test',
+        lastName: 'User',
+        role: Role.USER,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
-      mockUsersService.findByEmail.mockResolvedValue(user);
+      jest.spyOn(usersService, 'findByEmail').mockResolvedValue(user);
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
       const result = await service.validateUser('test@example.com', 'password');
@@ -60,24 +64,23 @@ describe('AuthService', () => {
       expect(result).toEqual({
         id: '1',
         email: 'test@example.com',
-        name: 'Test User',
-        role: 'USER',
+        firstName: 'Test',
+        lastName: 'User',
+        role: Role.USER,
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
       });
-      expect(mockUsersService.findByEmail).toHaveBeenCalledWith(
-        'test@example.com',
-      );
+      expect(usersService.findByEmail).toHaveBeenCalledWith('test@example.com');
       expect(bcrypt.compare).toHaveBeenCalledWith('password', 'hashedPassword');
     });
 
     it('should return null when user is not found', async () => {
-      mockUsersService.findByEmail.mockResolvedValue(null);
+      jest.spyOn(usersService, 'findByEmail').mockResolvedValue(null);
 
       const result = await service.validateUser('test@example.com', 'password');
 
       expect(result).toBeNull();
-      expect(mockUsersService.findByEmail).toHaveBeenCalledWith(
-        'test@example.com',
-      );
+      expect(usersService.findByEmail).toHaveBeenCalledWith('test@example.com');
       expect(bcrypt.compare).not.toHaveBeenCalled();
     });
 
@@ -86,9 +89,14 @@ describe('AuthService', () => {
         id: '1',
         email: 'test@example.com',
         password: 'hashedPassword',
+        firstName: 'Test',
+        lastName: 'User',
+        role: Role.USER,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
-      mockUsersService.findByEmail.mockResolvedValue(user);
+      jest.spyOn(usersService, 'findByEmail').mockResolvedValue(user);
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
       const result = await service.validateUser(
@@ -97,9 +105,7 @@ describe('AuthService', () => {
       );
 
       expect(result).toBeNull();
-      expect(mockUsersService.findByEmail).toHaveBeenCalledWith(
-        'test@example.com',
-      );
+      expect(usersService.findByEmail).toHaveBeenCalledWith('test@example.com');
       expect(bcrypt.compare).toHaveBeenCalledWith(
         'wrongPassword',
         'hashedPassword',
@@ -112,7 +118,11 @@ describe('AuthService', () => {
       const user = {
         id: '1',
         email: 'test@example.com',
-        role: 'USER',
+        firstName: 'Test',
+        lastName: 'User',
+        role: Role.USER,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       const loginDto = {
@@ -121,7 +131,7 @@ describe('AuthService', () => {
       };
 
       jest.spyOn(service, 'validateUser').mockResolvedValue(user);
-      mockJwtService.sign.mockReturnValue('jwt-token');
+      jest.spyOn(jwtService, 'sign').mockReturnValue('jwt-token');
 
       const result = await service.login(loginDto);
 
@@ -136,7 +146,7 @@ describe('AuthService', () => {
       expect(jwtService.sign).toHaveBeenCalledWith({
         sub: '1',
         email: 'test@example.com',
-        role: 'USER',
+        role: Role.USER,
       });
     });
 

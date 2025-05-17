@@ -76,8 +76,17 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Update user', description: 'Update user by ID' })
   @ApiBearerAuth('JWT-auth')
-  @ApiParam({ name: 'id', description: 'User ID', type: String, format: 'uuid' })
-  @ApiResponse({ status: 200, description: 'User updated successfully', type: User })
+  @ApiParam({
+    name: 'id',
+    description: 'User ID',
+    type: String,
+    format: 'uuid',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'User updated successfully',
+    type: User,
+  })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 404, description: 'User not found' })
   @UseGuards(JwtAuthGuard)

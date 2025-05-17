@@ -27,15 +27,15 @@ coverage:
       carryforward: true
 
 comment:
-  layout: "reach,diff,flags,files,footer"
+  layout: 'reach,diff,flags,files,footer'
   behavior: default
   require_changes: false
   require_base: false
   require_head: false
   require_bundle_changes: true
-  bundle_change_threshold: "1Kb"
+  bundle_change_threshold: '1Kb'
 
 # Bundle analysis configuration
 bundle_analysis:
-  warning_threshold: "5%"
-  status: "informational"
+  warning_threshold: '5%'
+  status: 'informational'
