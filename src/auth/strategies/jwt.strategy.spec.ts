@@ -4,7 +4,6 @@ import { JwtStrategy } from './jwt.strategy';
 
 describe('JwtStrategy', () => {
   let strategy: JwtStrategy;
-  let configService: ConfigService;
 
   const mockConfigService = {
     get: jest.fn(),
@@ -19,7 +18,6 @@ describe('JwtStrategy', () => {
     }).compile();
 
     strategy = module.get<JwtStrategy>(JwtStrategy);
-    configService = module.get<ConfigService>(ConfigService);
   });
 
   afterEach(() => {

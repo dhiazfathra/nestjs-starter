@@ -38,7 +38,7 @@ export class UsersService {
     });
 
     // Remove password from the response
-    const { password, ...result } = user;
+    const { password: _, ...result } = user;
     return result;
   }
 
@@ -47,7 +47,7 @@ export class UsersService {
       'users:all',
       async () => {
         const users = await this.prisma.user.findMany();
-        return users.map(({ password, ...rest }) => rest);
+        return users.map(({ password: _, ...rest }) => rest);
       },
       300, // Cache for 5 minutes
     );
@@ -65,7 +65,7 @@ export class UsersService {
           throw new NotFoundException(`User with ID ${id} not found`);
         }
 
-        const { password, ...result } = user;
+        const { password: _, ...result } = user;
         return result;
       },
       300, // Cache for 5 minutes
@@ -121,7 +121,7 @@ export class UsersService {
     // Invalidate the all users cache
     await this.cacheService.del('users:all');
 
-    const { password, ...result } = updatedUser;
+    const { password: _, ...result } = updatedUser;
     return result;
   }
 
