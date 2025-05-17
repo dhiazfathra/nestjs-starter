@@ -27,6 +27,7 @@ A NestJS TypeScript starter project with user authentication, following best pra
 - 🔑 **Role-Based Access Control** - User and Admin roles with proper guards
 - 🗃️ **Database Integration** - PostgreSQL with Prisma ORM
 - 🚀 **Redis Caching** - Performance optimization with Redis-based caching
+- 📊 **Bundle Analysis** - Monitor and optimize bundle size with Codecov integration
 - ✅ **Validation** - Request validation using class-validator
 - 🔄 **Environment Configuration** - Using dotenv and NestJS ConfigModule
 - 📚 **API Documentation** - Swagger/OpenAPI and Scalar API Reference
@@ -134,6 +135,25 @@ The API uses the following scalar types for consistent data representation:
 - `GET /api/users/:id` - Get user by ID (authenticated users)
 - `PATCH /api/users/:id` - Update user (authenticated users)
 - `DELETE /api/users/:id` - Delete user (admin only)
+
+## Bundle Analysis
+
+This project includes bundle analysis integration with Codecov to help monitor and optimize your application's bundle size.
+
+### Features
+
+- **Bundle Size Monitoring** - Track bundle size changes over time
+- **PR Comments** - Automatic bundle size reports in PR comments
+- **Commit Status** - Bundle size information in commit statuses
+- **Threshold Alerts** - Configurable warnings for significant bundle size increases
+
+### Usage
+
+Bundle analysis is automatically performed during the CI/CD pipeline. The results are available in:
+
+- Codecov UI under the "Bundles" tab
+- PR comments showing bundle size changes
+- Commit statuses with bundle size information
 
 ## Redis Caching
 
