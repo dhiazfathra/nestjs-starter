@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="66" failures="0" errors="0" time="4.833">
+  <testsuite name="RolesGuard" errors="0" failures="0" skipped="0" timestamp="2025-05-17T14:12:40" time="3.795" tests="4">
+    <testcase classname="RolesGuard should be defined" name="RolesGuard should be defined" time="0.012">
+    </testcase>
+    <testcase classname="RolesGuard canActivate should return true if no roles are required" name="RolesGuard canActivate should return true if no roles are required" time="0.002">
+    </testcase>
+    <testcase classname="RolesGuard canActivate should return true if user has required role" name="RolesGuard canActivate should return true if user has required role" time="0.001">
+    </testcase>
+    <testcase classname="RolesGuard canActivate should return false if user does not have required role" name="RolesGuard canActivate should return false if user does not have required role" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="CacheService" errors="0" failures="0" skipped="0" timestamp="2025-05-17T14:12:40" time="3.839" tests="12">
+    <testcase classname="CacheService should be defined" name="CacheService should be defined" time="0.008">
+    </testcase>
+    <testcase classname="CacheService get should return cached value when found" name="CacheService get should return cached value when found" time="0.002">
+    </testcase>
+    <testcase classname="CacheService get should return undefined when cache key not found" name="CacheService get should return undefined when cache key not found" time="0.001">
+    </testcase>
+    <testcase classname="CacheService get should handle errors and return undefined" name="CacheService get should handle errors and return undefined" time="0.001">
+    </testcase>
+    <testcase classname="CacheService set should set value in cache with ttl" name="CacheService set should set value in cache with ttl" time="0.001">
+    </testcase>
+    <testcase classname="CacheService set should set value in cache without ttl" name="CacheService set should set value in cache without ttl" time="0.001">
+    </testcase>
+    <testcase classname="CacheService set should handle errors when setting cache" name="CacheService set should handle errors when setting cache" time="0.007">
+    </testcase>
+    <testcase classname="CacheService del should delete value from cache" name="CacheService del should delete value from cache" time="0.001">
+    </testcase>
+    <testcase classname="CacheService del should handle errors when deleting from cache" name="CacheService del should handle errors when deleting from cache" time="0.001">
+    </testcase>
+    <testcase classname="CacheService getOrSet should return cached value when found" name="CacheService getOrSet should return cached value when found" time="0.004">
+    </testcase>
+    <testcase classname="CacheService getOrSet should call factory and cache result when key not found" name="CacheService getOrSet should call factory and cache result when key not found" time="0.002">
+    </testcase>
+    <testcase classname="CacheService getOrSet should propagate factory errors" name="CacheService getOrSet should propagate factory errors" time="0.01">
+    </testcase>
+  </testsuite>
+  <testsuite name="LocalStrategy" errors="0" failures="0" skipped="0" timestamp="2025-05-17T14:12:40" time="3.944" tests="3">
+    <testcase classname="LocalStrategy should be defined" name="LocalStrategy should be defined" time="0.014">
+    </testcase>
+    <testcase classname="LocalStrategy validate should return user when credentials are valid" name="LocalStrategy validate should return user when credentials are valid" time="0.002">
+    </testcase>
+    <testcase classname="LocalStrategy validate should throw UnauthorizedException when credentials are invalid" name="LocalStrategy validate should throw UnauthorizedException when credentials are invalid" time="0.008">
+    </testcase>
+  </testsuite>
+  <testsuite name="AuthService" errors="0" failures="0" skipped="0" timestamp="2025-05-17T14:12:40" time="3.92" tests="6">
+    <testcase classname="AuthService should be defined" name="AuthService should be defined" time="0.015">
+    </testcase>
+    <testcase classname="AuthService validateUser should return user without password when credentials are valid" name="AuthService validateUser should return user without password when credentials are valid" time="0.002">
+    </testcase>
+    <testcase classname="AuthService validateUser should return null when user is not found" name="AuthService validateUser should return null when user is not found" time="0.002">
+    </testcase>
+    <testcase classname="AuthService validateUser should return null when password is invalid" name="AuthService validateUser should return null when password is invalid" time="0.001">
+    </testcase>
+    <testcase classname="AuthService login should return access token and user when credentials are valid" name="AuthService login should return access token and user when credentials are valid" time="0.002">
+    </testcase>
+    <testcase classname="AuthService login should throw UnauthorizedException when credentials are invalid" name="AuthService login should throw UnauthorizedException when credentials are invalid" time="0.017">
+    </testcase>
+  </testsuite>
+  <testsuite name="PrismaService" errors="0" failures="0" skipped="0" timestamp="2025-05-17T14:12:44" time="0.16" tests="3">
+    <testcase classname="PrismaService should be defined" name="PrismaService should be defined" time="0.011">
+    </testcase>
+    <testcase classname="PrismaService onModuleInit should connect to the database" name="PrismaService onModuleInit should connect to the database" time="0.002">
+    </testcase>
+    <testcase classname="PrismaService onModuleDestroy should disconnect from the database" name="PrismaService onModuleDestroy should disconnect from the database" time="0.004">
+    </testcase>
+  </testsuite>
+  <testsuite name="JwtStrategy" errors="0" failures="0" skipped="0" timestamp="2025-05-17T14:12:40" time="4.011" tests="2">
+    <testcase classname="JwtStrategy should be defined" name="JwtStrategy should be defined" time="0.008">
+    </testcase>
+    <testcase classname="JwtStrategy validate should return user payload" name="JwtStrategy validate should return user payload" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="UsersService" errors="0" failures="0" skipped="0" timestamp="2025-05-17T14:12:43" time="0.217" tests="19">
+    <testcase classname="UsersService should be defined" name="UsersService should be defined" time="0.004">
+    </testcase>
+    <testcase classname="UsersService create should create a new user and return it without password" name="UsersService create should create a new user and return it without password" time="0.002">
+    </testcase>
+    <testcase classname="UsersService create should throw ConflictException if email already exists" name="UsersService create should throw ConflictException if email already exists" time="0.018">
+    </testcase>
+    <testcase classname="UsersService findAll should use cache service to get or set users" name="UsersService findAll should use cache service to get or set users" time="0.002">
+    </testcase>
+    <testcase classname="UsersService findAll should return cached users when available" name="UsersService findAll should return cached users when available" time="0.001">
+    </testcase>
+    <testcase classname="UsersService findOne should use cache service to get or set user by id" name="UsersService findOne should use cache service to get or set user by id" time="0.001">
+    </testcase>
+    <testcase classname="UsersService findOne should return cached user when available" name="UsersService findOne should return cached user when available" time="0.001">
+    </testcase>
+    <testcase classname="UsersService findOne should throw NotFoundException when user is not found" name="UsersService findOne should throw NotFoundException when user is not found" time="0.003">
+    </testcase>
+    <testcase classname="UsersService findByEmail should use cache service to get or set user by email" name="UsersService findByEmail should use cache service to get or set user by email" time="0.001">
+    </testcase>
+    <testcase classname="UsersService findByEmail should return cached user when available" name="UsersService findByEmail should return cached user when available" time="0.001">
+    </testcase>
+    <testcase classname="UsersService findByEmail should return null when user is not found by email" name="UsersService findByEmail should return null when user is not found by email" time="0.002">
+    </testcase>
+    <testcase classname="UsersService update should update user, invalidate cache, and return user without password" name="UsersService update should update user, invalidate cache, and return user without password" time="0.002">
+    </testcase>
+    <testcase classname="UsersService update should invalidate email cache when email is updated" name="UsersService update should invalidate email cache when email is updated" time="0.001">
+    </testcase>
+    <testcase classname="UsersService update should throw NotFoundException if user does not exist" name="UsersService update should throw NotFoundException if user does not exist" time="0.001">
+    </testcase>
+    <testcase classname="UsersService update should throw ConflictException if updating email to one that already exists" name="UsersService update should throw ConflictException if updating email to one that already exists" time="0.001">
+    </testcase>
+    <testcase classname="UsersService update should hash password if included in update" name="UsersService update should hash password if included in update" time="0">
+    </testcase>
+    <testcase classname="UsersService remove should delete user, invalidate cache, and return success message" name="UsersService remove should delete user, invalidate cache, and return success message" time="0.001">
+    </testcase>
+    <testcase classname="UsersService remove should throw NotFoundException if user does not exist" name="UsersService remove should throw NotFoundException if user does not exist" time="0.007">
+    </testcase>
+    <testcase classname="UsersService hashPassword should hash password" name="UsersService hashPassword should hash password" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="Roles Decorator" errors="0" failures="0" skipped="0" timestamp="2025-05-17T14:12:44" time="0.034" tests="2">
+    <testcase classname="Roles Decorator should call SetMetadata with roles key and roles array" name="Roles Decorator should call SetMetadata with roles key and roles array" time="0.001">
+    </testcase>
+    <testcase classname="Roles Decorator should call SetMetadata with multiple roles" name="Roles Decorator should call SetMetadata with multiple roles" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="JwtAuthGuard" errors="0" failures="0" skipped="0" timestamp="2025-05-17T14:12:44" time="0.117" tests="2">
+    <testcase classname="JwtAuthGuard should be defined" name="JwtAuthGuard should be defined" time="0.002">
+    </testcase>
+    <testcase classname="JwtAuthGuard should call AuthGuard with jwt strategy" name="JwtAuthGuard should call AuthGuard with jwt strategy" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="AppController" errors="0" failures="0" skipped="0" timestamp="2025-05-17T14:12:44" time="0.18" tests="1">
+    <testcase classname="AppController root should return &quot;Hello World!&quot;" name="AppController root should return &quot;Hello World!&quot;" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="LocalAuthGuard" errors="0" failures="0" skipped="0" timestamp="2025-05-17T14:12:44" time="0.169" tests="2">
+    <testcase classname="LocalAuthGuard should be defined" name="LocalAuthGuard should be defined" time="0.004">
+    </testcase>
+    <testcase classname="LocalAuthGuard should call AuthGuard with local strategy" name="LocalAuthGuard should call AuthGuard with local strategy" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="AuthController" errors="0" failures="0" skipped="0" timestamp="2025-05-17T14:12:40" time="4.294" tests="4">
+    <testcase classname="AuthController should be defined" name="AuthController should be defined" time="0.007">
+    </testcase>
+    <testcase classname="AuthController login should call authService.login with loginDto" name="AuthController login should call authService.login with loginDto" time="0.001">
+    </testcase>
+    <testcase classname="AuthController register should call usersService.create with createUserDto" name="AuthController register should call usersService.create with createUserDto" time="0.001">
+    </testcase>
+    <testcase classname="AuthController getProfile should return the user from the request" name="AuthController getProfile should return the user from the request" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="UsersController" errors="0" failures="0" skipped="0" timestamp="2025-05-17T14:12:40" time="4.317" tests="6">
+    <testcase classname="UsersController should be defined" name="UsersController should be defined" time="0.007">
+    </testcase>
+    <testcase classname="UsersController create should call usersService.create with createUserDto" name="UsersController create should call usersService.create with createUserDto" time="0.002">
+    </testcase>
+    <testcase classname="UsersController findAll should call usersService.findAll" name="UsersController findAll should call usersService.findAll" time="0.001">
+    </testcase>
+    <testcase classname="UsersController findOne should call usersService.findOne with id" name="UsersController findOne should call usersService.findOne with id" time="0.001">
+    </testcase>
+    <testcase classname="UsersController update should call usersService.update with id and updateUserDto" name="UsersController update should call usersService.update with id and updateUserDto" time="0.001">
+    </testcase>
+    <testcase classname="UsersController remove should call usersService.remove with id" name="UsersController remove should call usersService.remove with id" time="0.001">
+    </testcase>
+  </testsuite>
+</testsuites>
