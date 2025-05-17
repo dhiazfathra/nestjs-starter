@@ -33,18 +33,18 @@ jobs:
   type-check:
     name: TypeScript Type Check
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 1
-    
+
     - name: Use Node.js 22.x
       uses: actions/setup-node@v4
       with:
         node-version: 22.x
         cache: 'npm'
-    
+
     # Cache node_modules
     - name: Cache node_modules
       uses: actions/cache@v4
@@ -54,11 +54,11 @@ jobs:
         key: ${{ runner.os }}-node-22.x-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-node-22.x-
-    
+
     - name: Install dependencies
       if: steps.node-modules-cache.outputs.cache-hit != 'true'
       run: npm ci
-    
+
     # Cache TypeScript compilation results
     - name: Cache TypeScript
       uses: actions/cache@v4
@@ -70,26 +70,26 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-tsc-${{ hashFiles('**/tsconfig.json') }}-
           ${{ runner.os }}-tsc-
-    
+
     - name: TypeScript type check
       run: npx tsc --noEmit
-  
+
   lint:
     name: ESLint & Prettier
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v4
       with:
         # Full git history is needed to get a proper list of changed files for PRs
         fetch-depth: ${{ github.event_name == 'pull_request' && 0 || 1 }}
-    
+
     - name: Use Node.js 22.x
       uses: actions/setup-node@v4
       with:
         node-version: 22.x
         cache: 'npm'
-    
+
     # Cache node_modules
     - name: Cache node_modules
       uses: actions/cache@v4
@@ -99,11 +99,11 @@ jobs:
         key: ${{ runner.os }}-node-22.x-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-node-22.x-
-    
+
     - name: Install dependencies
       if: steps.node-modules-cache.outputs.cache-hit != 'true'
       run: npm ci
-    
+
     # Cache ESLint results
     - name: Cache ESLint results
       uses: actions/cache@v4
@@ -112,7 +112,7 @@ jobs:
         key: ${{ runner.os }}-eslint-${{ github.sha }}
         restore-keys: |
           ${{ runner.os }}-eslint-
-    
+
     # Cache Prettier results
     - name: Cache Prettier results
       uses: actions/cache@v4
@@ -121,7 +121,7 @@ jobs:
         key: ${{ runner.os }}-prettier-${{ github.sha }}
         restore-keys: |
           ${{ runner.os }}-prettier-
-    
+
     - name: Auto-fix ESLint and Prettier issues
       if: github.event_name == 'pull_request'
       run: |
@@ -131,29 +131,29 @@ jobs:
           echo "Fixing ESLint issues in changed files: $CHANGED_FILES"
           npx eslint --cache --fix $CHANGED_FILES || true
           npx prettier --cache --write $CHANGED_FILES || true
-          
+
           # Check if there are changes to commit
           if [ -n "$(git status --porcelain)" ]; then
             # Setup git user
             git config --local user.email "action@github.com"
             git config --local user.name "GitHub Action"
-            
+
             # Commit and push changes
             git add .
             git commit -m "chore: auto-fix linting and formatting issues"
             git push
           fi
         fi
-    
+
     - name: Generate ESLint report
       run: npx eslint --cache "{src,apps,libs,test}/**/*.ts" --format json --output-file eslint-report.json || true
-      
+
     - name: ESLint check (for CI status)
       run: npm run lint -- --cache
-      
+
     - name: Prettier check
       run: npx prettier --cache --check "src/**/*.ts" "test/**/*.ts" || echo "Prettier found formatting issues"
-      
+
     - name: Upload ESLint report
       if: always()
       uses: actions/upload-artifact@v4
