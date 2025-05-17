@@ -28,6 +28,11 @@ jobs:
     - name: Run tests with coverage and generate JUnit XML
       run: JEST_JUNIT_CLASSNAME="{filepath}" JEST_JUNIT_OUTPUT_DIR=./junit JEST_JUNIT_OUTPUT_NAME=junit.xml npm run test:cov -- --reporters=jest-junit
       
+    - name: Build with bundle analysis
+      run: npm run build
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v5
       if: ${{ !cancelled() }}
