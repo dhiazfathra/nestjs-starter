@@ -107,7 +107,7 @@ jobs:
 
       - name: Validate docker-compose.yml
         run: |
-          docker-compose config -q
+          docker compose config -q
           if [ $? -ne 0 ]; then
             echo "docker-compose.yml is not valid"
             exit 1
@@ -125,38 +125,38 @@ jobs:
           echo '{"experimental":true,"cpus":2,"memory":"2G"}' | sudo tee /etc/docker/daemon.json
           sudo systemctl restart docker
 
-      - name: Start services with docker-compose
+      - name: Start services with docker compose
         run: |
-          docker-compose up -d
+          docker compose up -d
           # Give services time to start
           sleep 10
 
       - name: Check if services are running
         run: |
-          if [ "$(docker-compose ps -q | wc -l)" -ne "3" ]; then
+          if [ "$(docker compose ps -q | wc -l)" -ne "3" ]; then
             echo "Not all services are running"
-            docker-compose logs
+            docker compose logs
             exit 1
           fi
           
           # Check app service
-          if ! docker-compose ps app | grep -q "Up"; then
+          if ! docker compose ps app | grep -q "Up"; then
             echo "App service is not running"
-            docker-compose logs app
+            docker compose logs app
             exit 1
           fi
           
           # Check postgres service
-          if ! docker-compose ps postgres | grep -q "Up"; then
+          if ! docker compose ps postgres | grep -q "Up"; then
             echo "Postgres service is not running"
-            docker-compose logs postgres
+            docker compose logs postgres
             exit 1
           fi
           
           # Check redis service
-          if ! docker-compose ps redis | grep -q "Up"; then
+          if ! docker compose ps redis | grep -q "Up"; then
             echo "Redis service is not running"
-            docker-compose logs redis
+            docker compose logs redis
             exit 1
           fi
 
@@ -166,14 +166,14 @@ jobs:
           # First wait for the port to be open
           timeout 30s bash -c 'until nc -z localhost 3001; do sleep 2; done' || {
             echo "App is not responding on port 3001"
-            docker-compose logs app
+            docker compose logs app
             exit 1
           }
           
           # Then check the health endpoint
           timeout 30s bash -c 'until curl -s http://localhost:3001/health | grep -q "status":"ok"; do sleep 2; done' || {
             echo "Health check failed"
-            docker-compose logs app
+            docker compose logs app
             exit 1
           }
           
@@ -181,5 +181,5 @@ jobs:
           curl -s http://localhost:3001/health
 
       - name: Clean up
-        run: docker-compose down -v
+        run: docker compose down -v
         if: always()
