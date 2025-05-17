@@ -8,7 +8,7 @@ services:
     container_name: nestjs-starter-app
     restart: always
     ports:
-      - '${PORT:-3000}:3000'
+      - '${PORT:-3001}:3000'
     env_file:
       - .env
     depends_on:
@@ -22,7 +22,7 @@ services:
     container_name: nestjs-starter-postgres
     restart: always
     ports:
-      - '5432:5432'
+      - '${POSTGRES_PORT:-5433}:5432'
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
@@ -37,7 +37,7 @@ services:
     container_name: nestjs-starter-redis
     restart: always
     ports:
-      - '6379:6379'
+      - '${REDIS_PORT:-6380}:6379'
     volumes:
       - redis-data:/data
     command: redis-server --appendonly yes
