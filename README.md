@@ -258,19 +258,37 @@ This project includes Docker support for easy deployment and development.
 
 ### Using Docker Compose
 
+This project uses Docker Compose to manage multiple services (NestJS app, PostgreSQL, and Redis). The commands below use Docker Compose V2 syntax (without hyphen):
+
 ```bash
-# Start all services (app and database)
-$ docker-compose up -d
+# Start all services (app, database, and Redis)
+$ docker compose up -d
 
 # View logs
-$ docker-compose logs -f
+$ docker compose logs -f
 
 # Stop all services
-$ docker-compose down
+$ docker compose down
 
 # Rebuild containers after making changes to Dockerfile
-$ docker-compose up -d --build
+$ docker compose up -d --build
+
+# Check application health
+$ curl http://localhost:3001/health
 ```
+
+### Health Check
+
+The application includes a health check endpoint at `/health` that returns a status object:
+
+```json
+{
+  "status": "ok",
+  "timestamp": "2025-05-18T06:55:11+07:00"
+}
+```
+
+This endpoint is used by the Docker validation workflow to verify that the application is functioning correctly.
 
 ### Environment Variables for Docker
 
