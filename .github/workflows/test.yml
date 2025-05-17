@@ -110,6 +110,8 @@ jobs:
   upload-coverage:
     runs-on: ubuntu-latest
     needs: test
+    # Skip this job for Dependabot PRs
+    if: github.actor != 'dependabot[bot]'
     
     steps:
     - uses: actions/checkout@v4
