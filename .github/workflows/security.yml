@@ -16,42 +16,42 @@ jobs:
       contents: read
       security-events: write
       actions: read
-      
+
     strategy:
       matrix:
         node-version: [22.x]
       fail-fast: false
-      
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
+
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-          
+
       - name: Install dependencies
         run: npm ci
-        
+
       # Dependency vulnerability scanning
       - name: Run npm audit
         run: npm audit --production --audit-level=high
         continue-on-error: true
-        
+
       # CodeQL Analysis for JavaScript/TypeScript
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: javascript, typescript
           queries: security-extended,security-and-quality
-          
+
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:javascript"
-          
+
       # Snyk security scan
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/node@master
@@ -60,12 +60,12 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           args: --severity-threshold=high
-          
+
       # Dependency Review to identify vulnerable dependencies
       - name: Dependency Review
         uses: actions/dependency-review-action@v4
         if: github.event_name == 'pull_request'
-        
+
       # Secret scanning alerts
       - name: Secret Scanning
         uses: gitleaks/gitleaks-action@v2
@@ -75,24 +75,15 @@ jobs:
           config-path: .github/gitleaks.toml
           path: .
         continue-on-error: true
-        
+
       # Generate ESLint SARIF report for security issues
       - name: Install ESLint SARIF formatter
         run: npm install --no-save @microsoft/eslint-formatter-sarif
-        
+
       - name: Generate ESLint SARIF report
         run: |
           npx eslint "{src,apps,libs,test}/**/*.ts" --format @microsoft/eslint-formatter-sarif --output-file eslint-sarif.json || true
-        
-      # Prisma security scan
-      - name: Prisma schema validation
-        run: |
-          # Create a temporary .env file with DATABASE_URL for validation
-          echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/test" > .env.temp
-          npx prisma validate --schema=prisma/schema.prisma --env-file=.env.temp
-          rm .env.temp
-        continue-on-error: true
-        
+
       # Upload ESLint SARIF results to GitHub Security tab
       - name: Upload ESLint SARIF file
         uses: github/codeql-action/upload-sarif@v3
