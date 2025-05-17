@@ -3,8 +3,22 @@ name: Security Scan
 on:
   push:
     branches: [ main, master ]
+    paths:
+      - 'src/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/gitleaks.toml'
+      - '.github/workflows/security.yml'
+      - '.eslintrc.js'
   pull_request:
     branches: [ main, master ]
+    paths:
+      - 'src/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/gitleaks.toml'
+      - '.github/workflows/security.yml'
+      - '.eslintrc.js'
   schedule:
     - cron: '0 0 * * 0'  # Run weekly at midnight on Sunday
 

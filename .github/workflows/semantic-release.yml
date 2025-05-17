@@ -5,6 +5,13 @@ on:
     branches:
       - main
       - master
+    paths:
+      - 'src/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.releaserc.json'
+      - 'CHANGELOG.md'
+      - '.github/workflows/semantic-release.yml'
 
 # Limit concurrent runs of the same workflow
 concurrency:
