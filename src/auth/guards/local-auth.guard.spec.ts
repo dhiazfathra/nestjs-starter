@@ -12,8 +12,8 @@ jest.mock('@nestjs/passport', () => ({
 }));
 
 // Import after mocking to ensure the mock is used
-import { LocalAuthGuard } from './local-auth.guard';
 import { AuthGuard } from '@nestjs/passport';
+import { LocalAuthGuard } from './local-auth.guard';
 
 describe('LocalAuthGuard', () => {
   let localAuthGuard: LocalAuthGuard;

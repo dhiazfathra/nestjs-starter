@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { UsersService } from './users.service';
-import { PrismaService } from '../prisma/prisma.service';
-import { CacheService } from '../cache/cache.service';
 import { ConflictException, NotFoundException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import * as bcrypt from 'bcrypt';
+import { CacheService } from '../cache/cache.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { UsersService } from './users.service';
 
 jest.mock('bcrypt');
 
@@ -101,7 +101,9 @@ describe('UsersService', () => {
 
       mockPrismaService.user.findUnique.mockResolvedValue(existingUser);
 
-      await expect(service.create(createUserDto)).rejects.toThrow(ConflictException);
+      await expect(service.create(createUserDto)).rejects.toThrow(
+        ConflictException,
+      );
       expect(prismaService.user.findUnique).toHaveBeenCalledWith({
         where: { email: createUserDto.email },
       });
@@ -158,7 +160,7 @@ describe('UsersService', () => {
       expect(cacheService.getOrSet).toHaveBeenCalledWith(
         'users:all',
         expect.any(Function),
-        300
+        300,
       );
       expect(prismaService.user.findMany).toHaveBeenCalled();
     });
@@ -182,7 +184,7 @@ describe('UsersService', () => {
       expect(cacheService.getOrSet).toHaveBeenCalledWith(
         'users:all',
         expect.any(Function),
-        300
+        300,
       );
       expect(prismaService.user.findMany).not.toHaveBeenCalled();
     });
@@ -219,7 +221,7 @@ describe('UsersService', () => {
       expect(cacheService.getOrSet).toHaveBeenCalledWith(
         'user:1',
         expect.any(Function),
-        300
+        300,
       );
       expect(prismaService.user.findUnique).toHaveBeenCalledWith({
         where: { id: '1' },
@@ -243,7 +245,7 @@ describe('UsersService', () => {
       expect(cacheService.getOrSet).toHaveBeenCalledWith(
         'user:1',
         expect.any(Function),
-        300
+        300,
       );
       expect(prismaService.user.findUnique).not.toHaveBeenCalled();
     });
@@ -260,7 +262,7 @@ describe('UsersService', () => {
       expect(cacheService.getOrSet).toHaveBeenCalledWith(
         'user:1',
         expect.any(Function),
-        300
+        300,
       );
       expect(prismaService.user.findUnique).toHaveBeenCalledWith({
         where: { id: '1' },
@@ -292,7 +294,7 @@ describe('UsersService', () => {
       expect(cacheService.getOrSet).toHaveBeenCalledWith(
         'user:email:test@example.com',
         expect.any(Function),
-        300
+        300,
       );
       expect(prismaService.user.findUnique).toHaveBeenCalledWith({
         where: { email: 'test@example.com' },
@@ -317,7 +319,7 @@ describe('UsersService', () => {
       expect(cacheService.getOrSet).toHaveBeenCalledWith(
         'user:email:test@example.com',
         expect.any(Function),
-        300
+        300,
       );
       expect(prismaService.user.findUnique).not.toHaveBeenCalled();
     });
@@ -336,7 +338,7 @@ describe('UsersService', () => {
       expect(cacheService.getOrSet).toHaveBeenCalledWith(
         'user:email:nonexistent@example.com',
         expect.any(Function),
-        300
+        300,
       );
       expect(prismaService.user.findUnique).toHaveBeenCalledWith({
         where: { email: 'nonexistent@example.com' },
@@ -385,11 +387,11 @@ describe('UsersService', () => {
         lastName: 'Name',
         role: 'USER',
       });
-      
+
       // Verify cache invalidation
       expect(cacheService.del).toHaveBeenCalledWith('user:1');
       expect(cacheService.del).toHaveBeenCalledWith('users:all');
-      
+
       expect(prismaService.user.findUnique).toHaveBeenCalledWith({
         where: { id: '1' },
       });
@@ -439,12 +441,14 @@ describe('UsersService', () => {
         name: 'Test User',
         role: 'USER',
       });
-      
+
       // Verify cache invalidation
       expect(cacheService.del).toHaveBeenCalledWith('user:1');
-      expect(cacheService.del).toHaveBeenCalledWith('user:email:new@example.com');
+      expect(cacheService.del).toHaveBeenCalledWith(
+        'user:email:new@example.com',
+      );
       expect(cacheService.del).toHaveBeenCalledWith('users:all');
-      
+
       expect(prismaService.user.update).toHaveBeenCalledWith({
         where: { id: '1' },
         data: updateWithEmailDto,
@@ -462,11 +466,11 @@ describe('UsersService', () => {
       await expect(service.update('1', updateUserDto)).rejects.toThrow(
         NotFoundException,
       );
-      
+
       expect(cacheService.getOrSet).toHaveBeenCalledWith(
         'user:1',
         expect.any(Function),
-        300
+        300,
       );
       expect(prismaService.user.update).not.toHaveBeenCalled();
       expect(cacheService.del).not.toHaveBeenCalled();
@@ -505,7 +509,7 @@ describe('UsersService', () => {
       await expect(service.update('1', updateWithEmailDto)).rejects.toThrow(
         ConflictException,
       );
-      
+
       expect(prismaService.user.update).not.toHaveBeenCalled();
       expect(cacheService.del).not.toHaveBeenCalled();
     });
@@ -548,11 +552,11 @@ describe('UsersService', () => {
         name: 'Test User',
         role: 'USER',
       });
-      
+
       // Verify cache invalidation
       expect(cacheService.del).toHaveBeenCalledWith('user:1');
       expect(cacheService.del).toHaveBeenCalledWith('users:all');
-      
+
       expect(bcrypt.hash).toHaveBeenCalledWith('newPassword', 10);
       expect(prismaService.user.update).toHaveBeenCalledWith({
         where: { id: '1' },
@@ -582,12 +586,14 @@ describe('UsersService', () => {
       const result = await service.remove('1');
 
       expect(result).toEqual({ message: 'User deleted successfully' });
-      
+
       // Verify cache invalidation
       expect(cacheService.del).toHaveBeenCalledWith('user:1');
-      expect(cacheService.del).toHaveBeenCalledWith('user:email:test@example.com');
+      expect(cacheService.del).toHaveBeenCalledWith(
+        'user:email:test@example.com',
+      );
       expect(cacheService.del).toHaveBeenCalledWith('users:all');
-      
+
       expect(prismaService.user.findUnique).toHaveBeenCalledWith({
         where: { id: '1' },
       });
@@ -605,11 +611,11 @@ describe('UsersService', () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
       await expect(service.remove('1')).rejects.toThrow(NotFoundException);
-      
+
       expect(cacheService.getOrSet).toHaveBeenCalledWith(
         'user:1',
         expect.any(Function),
-        300
+        300,
       );
       expect(prismaService.user.delete).not.toHaveBeenCalled();
       expect(cacheService.del).not.toHaveBeenCalled();

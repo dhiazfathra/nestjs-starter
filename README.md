@@ -11,6 +11,9 @@
   <a href="https://codecov.io/gh/dhiazfathra/nestjs-starter">
     <img src="https://codecov.io/gh/dhiazfathra/nestjs-starter/graph/badge.svg" alt="Coverage" />
   </a>
+  <a href="https://github.com/dhiazfathra/nestjs-starter/actions/workflows/static-analysis.yml">
+    <img src="https://github.com/dhiazfathra/nestjs-starter/actions/workflows/static-analysis.yml/badge.svg" alt="Static Analysis" />
+  </a>
   <a href="https://github.com/dhiazfathra/nestjs-starter/actions/workflows/semantic-release.yml">
     <img src="https://github.com/dhiazfathra/nestjs-starter/actions/workflows/semantic-release.yml/badge.svg" alt="Semantic Release" />
   </a>

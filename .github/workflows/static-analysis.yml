@@ -1,0 +1,75 @@
+name: Static Analysis
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  lint:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [22.x]
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        # Full git history is needed to get a proper list of changed files
+        fetch-depth: 0
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: TypeScript type check
+      run: npx tsc --noEmit
+    
+    - name: Auto-fix ESLint and Prettier issues
+      run: |
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          # Get list of changed files
+          CHANGED_FILES=$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep -E '\.ts$' | xargs)
+          if [ -n "$CHANGED_FILES" ]; then
+            echo "Fixing ESLint issues in changed files: $CHANGED_FILES"
+            npx eslint --fix $CHANGED_FILES || true
+            npx prettier --write $CHANGED_FILES || true
+            
+            # Check if there are changes to commit
+            if [ -n "$(git status --porcelain)" ]; then
+              # Setup git user
+              git config --local user.email "action@github.com"
+              git config --local user.name "GitHub Action"
+              
+              # Commit and push changes
+              git add .
+              git commit -m "chore: auto-fix linting and formatting issues"
+              git push
+            fi
+          fi
+        fi
+    
+    - name: Generate ESLint report
+      run: npx eslint "{src,apps,libs,test}/**/*.ts" --format json --output-file eslint-report.json || true
+      
+    - name: ESLint check (for CI status)
+      run: npm run lint
+      
+    - name: Prettier check
+      run: npx prettier --check "src/**/*.ts" "test/**/*.ts" || echo "Prettier found formatting issues"
+      
+    - name: Upload ESLint report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: eslint-report
+        path: eslint-report.json
+        if-no-files-found: ignore

@@ -1,15 +1,19 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { CacheService } from '../cache/cache.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
   constructor(
     private prisma: PrismaService,
-    private cacheService: CacheService
+    private cacheService: CacheService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -34,7 +38,7 @@ export class UsersService {
     });
 
     // Remove password from the response
-    const { password, ...result } = user;
+    const { password: _, ...result } = user;
     return result;
   }
 
@@ -43,9 +47,9 @@ export class UsersService {
       'users:all',
       async () => {
         const users = await this.prisma.user.findMany();
-        return users.map(({ password, ...rest }) => rest);
+        return users.map(({ password: _, ...rest }) => rest);
       },
-      300 // Cache for 5 minutes
+      300, // Cache for 5 minutes
     );
   }
 
@@ -61,10 +65,10 @@ export class UsersService {
           throw new NotFoundException(`User with ID ${id} not found`);
         }
 
-        const { password, ...result } = user;
+        const { password: _, ...result } = user;
         return result;
       },
-      300 // Cache for 5 minutes
+      300, // Cache for 5 minutes
     );
   }
 
@@ -76,7 +80,7 @@ export class UsersService {
           where: { email },
         });
       },
-      300 // Cache for 5 minutes
+      300, // Cache for 5 minutes
     );
   }
 
@@ -108,16 +112,16 @@ export class UsersService {
 
     // Invalidate cache for this user
     await this.cacheService.del(`user:${id}`);
-    
+
     // If email was updated, invalidate the email cache
     if (updateUserDto.email) {
       await this.cacheService.del(`user:email:${updateUserDto.email}`);
     }
-    
+
     // Invalidate the all users cache
     await this.cacheService.del('users:all');
 
-    const { password, ...result } = updatedUser;
+    const { password: _, ...result } = updatedUser;
     return result;
   }
 
@@ -132,12 +136,12 @@ export class UsersService {
 
     // Invalidate cache for this user
     await this.cacheService.del(`user:${id}`);
-    
+
     // Invalidate the email cache
     if (user.email) {
       await this.cacheService.del(`user:email:${user.email}`);
     }
-    
+
     // Invalidate the all users cache
     await this.cacheService.del('users:all');
 

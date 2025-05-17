@@ -10,7 +10,7 @@ describe('PrismaService', () => {
     }).compile();
 
     service = module.get<PrismaService>(PrismaService);
-    
+
     // Mock the Prisma client methods
     jest.spyOn(service, '$connect').mockImplementation(jest.fn());
     jest.spyOn(service, '$disconnect').mockImplementation(jest.fn());

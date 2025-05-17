@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { RolesGuard } from './roles.guard';
-import { Reflector } from '@nestjs/core';
 import { ExecutionContext } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { Test, TestingModule } from '@nestjs/testing';
 import { Role } from '../../common/enums/role.enum';
+import { RolesGuard } from './roles.guard';
 
 describe('RolesGuard', () => {
   let guard: RolesGuard;
@@ -14,10 +14,7 @@ describe('RolesGuard', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        RolesGuard,
-        { provide: Reflector, useValue: mockReflector },
-      ],
+      providers: [RolesGuard, { provide: Reflector, useValue: mockReflector }],
     }).compile();
 
     guard = module.get<RolesGuard>(RolesGuard);
@@ -75,14 +72,14 @@ describe('RolesGuard', () => {
 
     it('should return false if user does not have required role', () => {
       mockReflector.getAllAndOverride.mockReturnValue([Role.USER]);
-      
+
       // Change user role to ADMIN
       const request = mockExecutionContext.switchToHttp().getRequest();
       request.user.role = Role.ADMIN;
 
       // Test with required role as USER
       mockReflector.getAllAndOverride.mockReturnValue([Role.USER]);
-      
+
       // Change user role to something not matching required roles
       const httpContext = mockExecutionContext.switchToHttp();
       jest.spyOn(httpContext, 'getRequest').mockReturnValue({
