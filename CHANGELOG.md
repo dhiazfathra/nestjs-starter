@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/dhiazfathra/nestjs-starter/compare/v1.0.0...v1.1.0) (2025-05-17)
+
+
+### Features
+
+* implement Redis caching with cache service and user data caching ([#10](https://github.com/dhiazfathra/nestjs-starter/issues/10)) ([161c7b6](https://github.com/dhiazfathra/nestjs-starter/commit/161c7b6c9ed6873a63054e6fbcdc999b42fe05f6))
+
 # 1.0.0 (2025-05-17)
 
 
