@@ -200,6 +200,35 @@ const value = await cacheService.getOrSet(
 └── test/                # Test files
 ```
 
+## Testing
+
+```bash
+# Unit tests
+$ npm run test
+
+# Watch mode for tests
+$ npm run test:watch
+
+# Test coverage
+$ npm run test:cov
+
+# Test with JUnit XML output for test analytics
+$ npm run test:junit
+
+# E2E tests
+$ npm run test:e2e
+```
+
+## Test Analytics
+
+This project is configured with Codecov Test Analytics to provide insights into test performance and reliability:
+
+- Overview of test run times and failure rates across branches
+- Identification of failed tests in PR comments with stack traces for easier debugging
+- Detection of flaky tests that fail intermittently
+
+Test results are automatically uploaded to Codecov during CI runs via GitHub Actions. The workflow generates JUnit XML test reports and uploads them alongside coverage reports using the Codecov Test Results Action.
+
 ## License
 
 This project is [MIT licensed](LICENSE).
