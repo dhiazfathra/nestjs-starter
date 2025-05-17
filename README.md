@@ -28,6 +28,7 @@ A NestJS TypeScript starter project with user authentication, following best pra
 - 🗃️ **Database Integration** - PostgreSQL with Prisma ORM
 - ✅ **Validation** - Request validation using class-validator
 - 🔄 **Environment Configuration** - Using dotenv and NestJS ConfigModule
+- 📚 **API Documentation** - Swagger/OpenAPI with custom scalar types
 
 ## Prerequisites
 
@@ -77,14 +78,38 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## API Endpoints
+## API Documentation
 
-### Authentication
+The API is documented using Swagger/OpenAPI. When the application is running, you can access the interactive API documentation at:
+
+```
+http://localhost:3000/api/docs
+```
+
+The documentation includes:
+
+- Interactive API explorer
+- Request/response schemas with examples
+- Authentication requirements
+- Custom scalar types for consistent data representation
+
+### Scalar Types
+
+The API uses the following scalar types for consistent data representation:
+
+- **UUID** - For entity IDs (format: uuid)
+- **Date** - For timestamps (format: date-time, ISO8601)
+- **Email** - For email addresses (format: email)
+- **Password** - For password fields (format: password)
+
+### API Endpoints
+
+#### Authentication
 - `POST /api/auth/register` - Register a new user
 - `POST /api/auth/login` - Login and get access token
 - `GET /api/auth/profile` - Get current user profile (requires authentication)
 
-### Users
+#### Users
 - `GET /api/users` - Get all users (admin only)
 - `GET /api/users/:id` - Get user by ID (authenticated users)
 - `PATCH /api/users/:id` - Update user (authenticated users)
@@ -101,10 +126,12 @@ $ npm run start:prod
 │   │   ├── guards/      # Authentication guards
 │   │   └── strategies/  # Passport strategies
 │   ├── common/          # Shared resources
-│   │   └── enums/       # Enumerations
+│   │   ├── enums/       # Enumerations
+│   │   └── scalars/     # Custom scalar types for API docs
 │   ├── prisma/          # Prisma service
 │   ├── users/           # Users module
-│   │   └── dto/         # Data transfer objects
+│   │   ├── dto/         # Data transfer objects
+│   │   └── entities/    # Entity definitions for API docs
 │   ├── app.module.ts    # Main application module
 │   └── main.ts          # Application entry point
 └── test/                # Test files
