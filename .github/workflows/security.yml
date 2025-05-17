@@ -63,7 +63,7 @@ jobs:
           
       # Dependency Review to identify vulnerable dependencies
       - name: Dependency Review
-        uses: actions/dependency-review-action@v3
+        uses: actions/dependency-review-action@v4
         if: github.event_name == 'pull_request'
         
       # Secret scanning alerts
