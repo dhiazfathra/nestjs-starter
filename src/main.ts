@@ -2,6 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { apiReference } from '@scalar/nestjs-api-reference';
 import { AppModule } from './app.module';
 import { CustomScalars } from './common/scalars';
 
@@ -62,11 +63,31 @@ async function bootstrap() {
     document.components.schemas[name] = schema;
   });
   
+  // Set up standard Swagger UI
   SwaggerModule.setup('api/docs', app, document);
+  
+  // Set up Scalar API Reference
+  app.use(
+    '/api/reference',
+    apiReference({
+      // Use the Swagger document we created
+      content: document,
+      // Use the NestJS theme
+      theme: 'nestjs',
+      // Pin to a specific version for stability
+      cdn: 'https://cdn.jsdelivr.net/npm/@scalar/api-reference@1.25.28',
+      // Additional configuration
+      layout: 'modern',
+      title: 'NestJS Starter API Reference',
+      logo: 'https://nestjs.com/img/logo-small.svg',
+      favicon: 'https://nestjs.com/img/favicon.png',
+    }),
+  );
   
   const port = configService.get('PORT') || 3000;
   await app.listen(port);
   console.log(`Application is running on: http://localhost:${port}/api`);
   console.log(`API Documentation available at: http://localhost:${port}/api/docs`);
+  console.log(`Scalar API Reference available at: http://localhost:${port}/api/reference`);
 }
 bootstrap();
