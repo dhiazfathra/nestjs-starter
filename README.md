@@ -28,7 +28,7 @@ A NestJS TypeScript starter project with user authentication, following best pra
 - 🗃️ **Database Integration** - PostgreSQL with Prisma ORM
 - ✅ **Validation** - Request validation using class-validator
 - 🔄 **Environment Configuration** - Using dotenv and NestJS ConfigModule
-- 📚 **API Documentation** - Swagger/OpenAPI with custom scalar types
+- 📚 **API Documentation** - Swagger/OpenAPI and Scalar API Reference
 
 ## Prerequisites
 
@@ -80,13 +80,27 @@ $ npm run start:prod
 
 ## API Documentation
 
-The API is documented using Swagger/OpenAPI. When the application is running, you can access the interactive API documentation at:
+The API is documented using Swagger/OpenAPI with two different interfaces:
+
+### Standard Swagger UI
+
+When the application is running, you can access the standard Swagger UI at:
 
 ```
 http://localhost:3000/api/docs
 ```
 
-The documentation includes:
+### Scalar API Reference
+
+A beautiful, modern API reference powered by Scalar is available at:
+
+```
+http://localhost:3000/api/reference
+```
+
+The Scalar API Reference provides a more user-friendly and visually appealing interface for exploring the API.
+
+Both documentation interfaces include:
 
 - Interactive API explorer
 - Request/response schemas with examples
