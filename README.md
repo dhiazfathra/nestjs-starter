@@ -28,7 +28,7 @@ A NestJS TypeScript starter project with user authentication, following best pra
 - 🗃️ **Database Integration** - PostgreSQL with Prisma ORM
 - ✅ **Validation** - Request validation using class-validator
 - 🔄 **Environment Configuration** - Using dotenv and NestJS ConfigModule
-- 📚 **API Documentation** - Swagger/OpenAPI with custom scalar types and beautiful Scalar API Reference
+- 📚 **API Documentation** - Swagger/OpenAPI and Scalar API Reference
 
 ## Prerequisites
 
