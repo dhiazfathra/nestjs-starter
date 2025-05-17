@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/dhiazfathra/nestjs-starter/compare/v1.1.0...v1.2.0) (2025-05-17)
+
+
+### Features
+
+* integrate Codecov test & bundle analytics, JUnit reporting, and webpack bundle analyzer ([#12](https://github.com/dhiazfathra/nestjs-starter/issues/12)) ([48c8c12](https://github.com/dhiazfathra/nestjs-starter/commit/48c8c128e4bc6af9da7876b8fcf60a875f45aedb))
+
 # [1.1.0](https://github.com/dhiazfathra/nestjs-starter/compare/v1.0.0...v1.1.0) (2025-05-17)
 
 
