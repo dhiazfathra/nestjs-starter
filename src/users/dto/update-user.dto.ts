@@ -7,7 +7,7 @@ export class UpdateUserDto {
     format: 'email',
     example: 'user@example.com',
     type: String,
-    required: false
+    required: false,
   })
   @IsEmail()
   @IsOptional()
@@ -19,7 +19,7 @@ export class UpdateUserDto {
     example: 'Password123!',
     type: String,
     required: false,
-    minLength: 8
+    minLength: 8,
   })
   @IsString()
   @IsOptional()
@@ -30,7 +30,7 @@ export class UpdateUserDto {
     description: 'User first name',
     example: 'John',
     type: String,
-    required: false
+    required: false,
   })
   @IsString()
   @IsOptional()
@@ -40,7 +40,7 @@ export class UpdateUserDto {
     description: 'User last name',
     example: 'Doe',
     type: String,
-    required: false
+    required: false,
   })
   @IsString()
   @IsOptional()

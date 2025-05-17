@@ -14,13 +14,13 @@ import { CustomScalars } from './common/scalars';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
-  
+
   // Enable CORS
   app.enableCors();
-  
+
   // Global prefix
   app.setGlobalPrefix('api');
-  
+
   // Global validation pipe
   app.useGlobalPipes(
     new ValidationPipe({
@@ -34,14 +34,21 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('NestJS Starter API')
     .setDescription(
-      'API documentation for NestJS Starter project. This API provides authentication, user management, and role-based access control.'
+      'API documentation for NestJS Starter project. This API provides authentication, user management, and role-based access control.',
     )
     .setVersion('1.0')
     .addServer('http://localhost:3000', 'Local development server')
     .addServer('https://api.example.com', 'Production server')
-    .addTag('auth', 'Authentication endpoints for login, registration, and profile management')
+    .addTag(
+      'auth',
+      'Authentication endpoints for login, registration, and profile management',
+    )
     .addTag('users', 'User management endpoints with role-based access control')
-    .setContact('API Support', 'https://github.com/dhiazfathra/nestjs-starter', 'support@example.com')
+    .setContact(
+      'API Support',
+      'https://github.com/dhiazfathra/nestjs-starter',
+      'support@example.com',
+    )
     .setLicense('MIT', 'https://opensource.org/licenses/MIT')
     .addBearerAuth(
       {
@@ -55,17 +62,17 @@ async function bootstrap() {
       'JWT-auth',
     )
     .build();
-    
+
   const document = SwaggerModule.createDocument(app, config);
-  
+
   // Add custom scalar types to schema
   Object.entries(CustomScalars).forEach(([name, schema]) => {
     document.components.schemas[name] = schema;
   });
-  
+
   // Set up standard Swagger UI
   SwaggerModule.setup('api/docs', app, document);
-  
+
   // Set up Scalar API Reference
   app.use(
     '/api/reference',
@@ -83,11 +90,15 @@ async function bootstrap() {
       favicon: 'https://nestjs.com/img/favicon.png',
     }),
   );
-  
+
   const port = configService.get('PORT') || 3000;
   await app.listen(port);
   console.log(`Application is running on: http://localhost:${port}/api`);
-  console.log(`API Documentation available at: http://localhost:${port}/api/docs`);
-  console.log(`Scalar API Reference available at: http://localhost:${port}/api/reference`);
+  console.log(
+    `API Documentation available at: http://localhost:${port}/api/docs`,
+  );
+  console.log(
+    `Scalar API Reference available at: http://localhost:${port}/api/reference`,
+  );
 }
 bootstrap();

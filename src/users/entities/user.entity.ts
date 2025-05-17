@@ -10,7 +10,7 @@ export class User {
     description: 'User ID',
     example: '123e4567-e89b-12d3-a456-426614174000',
     format: 'uuid',
-    type: String
+    type: String,
   })
   id: string;
 
@@ -18,7 +18,7 @@ export class User {
     description: 'User email address',
     example: 'user@example.com',
     format: 'email',
-    type: String
+    type: String,
   })
   email: string;
 
@@ -26,7 +26,7 @@ export class User {
     description: 'User first name',
     example: 'John',
     type: String,
-    required: false
+    required: false,
   })
   firstName?: string;
 
@@ -34,7 +34,7 @@ export class User {
     description: 'User last name',
     example: 'Doe',
     type: String,
-    required: false
+    required: false,
   })
   lastName?: string;
 
@@ -43,7 +43,7 @@ export class User {
     example: [Role.USER],
     type: [String],
     enum: Role,
-    isArray: true
+    isArray: true,
   })
   roles: Role[];
 
@@ -51,7 +51,7 @@ export class User {
     description: 'When the user was created',
     example: '2025-05-17T13:19:32.000Z',
     format: 'date-time',
-    type: Date
+    type: Date,
   })
   createdAt: Date;
 
@@ -59,7 +59,7 @@ export class User {
     description: 'When the user was last updated',
     example: '2025-05-17T13:19:32.000Z',
     format: 'date-time',
-    type: Date
+    type: Date,
   })
   updatedAt: Date;
 }

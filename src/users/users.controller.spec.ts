@@ -19,9 +19,7 @@ describe('UsersController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
-      providers: [
-        { provide: UsersService, useValue: mockUsersService },
-      ],
+      providers: [{ provide: UsersService, useValue: mockUsersService }],
     })
       .overrideGuard(JwtAuthGuard)
       .useValue({ canActivate: jest.fn(() => true) })
@@ -114,7 +112,7 @@ describe('UsersController', () => {
       const id = '1';
       const updateUserDto = {
         firstName: 'Updated',
-        lastName: 'Name'
+        lastName: 'Name',
       };
       const expectedResult = {
         id: '1',

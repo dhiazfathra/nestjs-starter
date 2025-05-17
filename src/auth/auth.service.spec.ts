@@ -56,14 +56,16 @@ describe('AuthService', () => {
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
       const result = await service.validateUser('test@example.com', 'password');
-      
+
       expect(result).toEqual({
         id: '1',
         email: 'test@example.com',
         name: 'Test User',
         role: 'USER',
       });
-      expect(mockUsersService.findByEmail).toHaveBeenCalledWith('test@example.com');
+      expect(mockUsersService.findByEmail).toHaveBeenCalledWith(
+        'test@example.com',
+      );
       expect(bcrypt.compare).toHaveBeenCalledWith('password', 'hashedPassword');
     });
 
@@ -71,9 +73,11 @@ describe('AuthService', () => {
       mockUsersService.findByEmail.mockResolvedValue(null);
 
       const result = await service.validateUser('test@example.com', 'password');
-      
+
       expect(result).toBeNull();
-      expect(mockUsersService.findByEmail).toHaveBeenCalledWith('test@example.com');
+      expect(mockUsersService.findByEmail).toHaveBeenCalledWith(
+        'test@example.com',
+      );
       expect(bcrypt.compare).not.toHaveBeenCalled();
     });
 
@@ -87,11 +91,19 @@ describe('AuthService', () => {
       mockUsersService.findByEmail.mockResolvedValue(user);
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
-      const result = await service.validateUser('test@example.com', 'wrongPassword');
-      
+      const result = await service.validateUser(
+        'test@example.com',
+        'wrongPassword',
+      );
+
       expect(result).toBeNull();
-      expect(mockUsersService.findByEmail).toHaveBeenCalledWith('test@example.com');
-      expect(bcrypt.compare).toHaveBeenCalledWith('wrongPassword', 'hashedPassword');
+      expect(mockUsersService.findByEmail).toHaveBeenCalledWith(
+        'test@example.com',
+      );
+      expect(bcrypt.compare).toHaveBeenCalledWith(
+        'wrongPassword',
+        'hashedPassword',
+      );
     });
   });
 
@@ -112,12 +124,15 @@ describe('AuthService', () => {
       mockJwtService.sign.mockReturnValue('jwt-token');
 
       const result = await service.login(loginDto);
-      
+
       expect(result).toEqual({
         access_token: 'jwt-token',
         user,
       });
-      expect(service.validateUser).toHaveBeenCalledWith('test@example.com', 'password');
+      expect(service.validateUser).toHaveBeenCalledWith(
+        'test@example.com',
+        'password',
+      );
       expect(jwtService.sign).toHaveBeenCalledWith({
         sub: '1',
         email: 'test@example.com',
@@ -133,8 +148,13 @@ describe('AuthService', () => {
 
       jest.spyOn(service, 'validateUser').mockResolvedValue(null);
 
-      await expect(service.login(loginDto)).rejects.toThrow(UnauthorizedException);
-      expect(service.validateUser).toHaveBeenCalledWith('test@example.com', 'wrongPassword');
+      await expect(service.login(loginDto)).rejects.toThrow(
+        UnauthorizedException,
+      );
+      expect(service.validateUser).toHaveBeenCalledWith(
+        'test@example.com',
+        'wrongPassword',
+      );
       expect(jwtService.sign).not.toHaveBeenCalled();
     });
   });

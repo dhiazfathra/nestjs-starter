@@ -5,7 +5,7 @@ import { Cache } from 'cache-manager';
 @Injectable()
 export class CacheService {
   private readonly logger = new Logger(CacheService.name);
-  
+
   constructor(@Inject(CACHE_MANAGER) private readonly cacheManager: Cache) {}
 
   /**
@@ -56,19 +56,26 @@ export class CacheService {
    * @param ttl - Time to live in seconds (optional)
    * @returns The cached or newly generated value
    */
-  async getOrSet<T>(key: string, factory: () => Promise<T>, ttl?: number): Promise<T> {
+  async getOrSet<T>(
+    key: string,
+    factory: () => Promise<T>,
+    ttl?: number,
+  ): Promise<T> {
     const cachedValue = await this.get<T>(key);
-    
+
     if (cachedValue !== undefined) {
       return cachedValue;
     }
-    
+
     try {
       const newValue = await factory();
       await this.set(key, newValue, ttl);
       return newValue;
     } catch (error) {
-      this.logger.error(`Failed to execute factory function for cache key ${key}:`, error);
+      this.logger.error(
+        `Failed to execute factory function for cache key ${key}:`,
+        error,
+      );
       throw error;
     }
   }
