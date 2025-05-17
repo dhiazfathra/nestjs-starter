@@ -1,7 +1,9 @@
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { CustomScalars } from './common/scalars';
 
 /**
  * Initializes and starts the NestJS application with global configuration.
@@ -26,9 +28,45 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  // Setup Swagger documentation
+  const config = new DocumentBuilder()
+    .setTitle('NestJS Starter API')
+    .setDescription(
+      'API documentation for NestJS Starter project. This API provides authentication, user management, and role-based access control.'
+    )
+    .setVersion('1.0')
+    .addServer('http://localhost:3000', 'Local development server')
+    .addServer('https://api.example.com', 'Production server')
+    .addTag('auth', 'Authentication endpoints for login, registration, and profile management')
+    .addTag('users', 'User management endpoints with role-based access control')
+    .setContact('API Support', 'https://github.com/dhiazfathra/nestjs-starter', 'support@example.com')
+    .setLicense('MIT', 'https://opensource.org/licenses/MIT')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Enter JWT token',
+        in: 'header',
+      },
+      'JWT-auth',
+    )
+    .build();
+    
+  const document = SwaggerModule.createDocument(app, config);
+  
+  // Add custom scalar types to schema
+  Object.entries(CustomScalars).forEach(([name, schema]) => {
+    document.components.schemas[name] = schema;
+  });
+  
+  SwaggerModule.setup('api/docs', app, document);
   
   const port = configService.get('PORT') || 3000;
   await app.listen(port);
   console.log(`Application is running on: http://localhost:${port}/api`);
+  console.log(`API Documentation available at: http://localhost:${port}/api/docs`);
 }
 bootstrap();
