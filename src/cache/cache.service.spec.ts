@@ -1,11 +1,12 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Cache } from 'cache-manager';
 import { CacheService } from './cache.service';
 
 describe('CacheService', () => {
   let service: CacheService;
-  let cacheManager: any;
+  let cacheManager: Cache;
 
   const mockCacheManager = {
     get: jest.fn(),
