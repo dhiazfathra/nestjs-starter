@@ -26,6 +26,7 @@ A NestJS TypeScript starter project with user authentication, following best pra
 - 👤 **User Management** - Complete CRUD operations for users
 - 🔑 **Role-Based Access Control** - User and Admin roles with proper guards
 - 🗃️ **Database Integration** - PostgreSQL with Prisma ORM
+- 🚀 **Redis Caching** - Performance optimization with Redis-based caching
 - ✅ **Validation** - Request validation using class-validator
 - 🔄 **Environment Configuration** - Using dotenv and NestJS ConfigModule
 - 📚 **API Documentation** - Swagger/OpenAPI and Scalar API Reference
@@ -63,6 +64,11 @@ JWT_EXPIRATION="1d"
 
 # Application
 PORT=3000
+
+# Redis Cache Configuration
+REDIS_HOST=localhost
+REDIS_PORT=6379
+CACHE_TTL=300
 ```
 
 ## Running the app
@@ -129,6 +135,48 @@ The API uses the following scalar types for consistent data representation:
 - `PATCH /api/users/:id` - Update user (authenticated users)
 - `DELETE /api/users/:id` - Delete user (admin only)
 
+## Redis Caching
+
+This project implements Redis caching to improve performance and reduce database load. The caching system is designed to be transparent and easy to use throughout the application.
+
+### Features
+
+- **Transparent Caching** - Data is automatically cached and invalidated when needed
+- **Configurable TTL** - Cache expiration times are configurable via environment variables
+- **Cache Invalidation** - Automatic cache invalidation on data updates/deletes
+- **Centralized Service** - A dedicated CacheService for all caching operations
+
+### Implementation
+
+The caching system is implemented using:
+
+- `@nestjs/cache-manager` - NestJS cache manager module
+- `cache-manager` - Flexible cache manager
+- `cache-manager-redis-store` - Redis store for cache-manager
+- `redis` - Redis client for Node.js
+
+### Usage
+
+The CacheService provides the following methods:
+
+```typescript
+// Get a value from cache
+const value = await cacheService.get<T>(key);
+
+// Set a value in cache
+await cacheService.set(key, value, ttl);
+
+// Delete a value from cache
+await cacheService.del(key);
+
+// Get a value from cache or compute it if not found
+const value = await cacheService.getOrSet(
+  key,
+  async () => computeValue(),
+  ttl
+);
+```
+
 ## Project Structure
 
 ```
@@ -139,6 +187,7 @@ The API uses the following scalar types for consistent data representation:
 │   │   ├── dto/         # Data transfer objects
 │   │   ├── guards/      # Authentication guards
 │   │   └── strategies/  # Passport strategies
+│   ├── cache/           # Redis caching module
 │   ├── common/          # Shared resources
 │   │   ├── enums/       # Enumerations
 │   │   └── scalars/     # Custom scalar types for API docs
