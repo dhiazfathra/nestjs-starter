@@ -4,6 +4,18 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
 
+<p align="center">
+  <a href="https://github.com/dhiazfathra/nestjs-starter/actions/workflows/test.yml">
+    <img src="https://github.com/dhiazfathra/nestjs-starter/actions/workflows/test.yml/badge.svg" alt="Tests" />
+  </a>
+  <a href="https://codecov.io/gh/dhiazfathra/nestjs-starter">
+    <img src="https://codecov.io/gh/dhiazfathra/nestjs-starter/branch/main/graph/badge.svg" alt="Coverage" />
+  </a>
+  <a href="https://github.com/dhiazfathra/nestjs-starter/actions/workflows/semantic-release.yml">
+    <img src="https://github.com/dhiazfathra/nestjs-starter/actions/workflows/semantic-release.yml/badge.svg" alt="Semantic Release" />
+  </a>
+</p>
+
 ## Description
 
 A NestJS TypeScript starter project with user authentication, following best practices, DRY and SOLID principles. This project provides a solid foundation for building secure and scalable backend applications.
