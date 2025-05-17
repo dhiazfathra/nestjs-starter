@@ -1,6 +1,7 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as bcrypt from 'bcrypt';
+import { Role } from '../common/enums/role.enum';
 import { CacheService } from '../cache/cache.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from './users.service';
@@ -623,16 +624,50 @@ describe('UsersService', () => {
   });
 
   describe('hashPassword', () => {
-    it('should hash password', async () => {
-      const password = 'password';
-      const hashedPassword = 'hashedPassword';
+    it('should hash password correctly', async () => {
+      const password = 'plainPassword';
+      const hashedPassword = 'hashedPassword123';
 
       (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
 
-      const result = await (service as any).hashPassword(password);
+      // Instead of testing the private method directly, we'll test the create method
+      // which uses the private hashPassword method internally
+      const createUserDto = {
+        email: 'test@example.com',
+        password,
+        firstName: 'Test',
+        lastName: 'User',
+        role: Role.USER,
+      };
 
-      expect(result).toBe(hashedPassword);
+      const mockCreatedUser = {
+        id: '1',
+        email: 'test@example.com',
+        password: hashedPassword,
+        firstName: 'Test',
+        lastName: 'User',
+        role: Role.USER,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      // Mock the necessary methods
+      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(null); // No existing user
+      jest
+        .spyOn(prismaService.user, 'create')
+        .mockResolvedValue(mockCreatedUser);
+
+      await service.create(createUserDto);
+
+      // Verify bcrypt was called with the correct parameters
       expect(bcrypt.hash).toHaveBeenCalledWith(password, 10);
+      // Verify the create was called with the hashed password
+      expect(prismaService.user.create).toHaveBeenCalledWith({
+        data: {
+          ...createUserDto,
+          password: hashedPassword,
+        },
+      });
     });
   });
 });

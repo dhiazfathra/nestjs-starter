@@ -28,7 +28,7 @@ export class CacheService {
    * @param value - Value to cache
    * @param ttl - Time to live in seconds (optional)
    */
-  async set(key: string, value: any, ttl?: number): Promise<void> {
+  async set<T>(key: string, value: T, ttl?: number): Promise<void> {
     try {
       // Pass ttl directly as the third parameter
       await this.cacheManager.set(key, value, ttl);
