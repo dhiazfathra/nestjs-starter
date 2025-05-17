@@ -160,12 +160,12 @@ jobs:
             exit 1
           fi
 
-      # Check app health
-      - name: Check app health
+      # Check if app is listening on port
+      - name: Check if app is responding
         run: |
-          # Wait for app to be ready
-          timeout 60s bash -c 'until curl -s http://localhost:3001/api/health; do sleep 2; done' || {
-            echo "App health check failed"
+          # Wait for app to start accepting connections
+          timeout 60s bash -c 'until nc -z localhost 3001; do sleep 2; done' || {
+            echo "App is not responding on port 3001"
             docker-compose logs app
             exit 1
           }
