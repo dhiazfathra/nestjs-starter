@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/dhiazfathra/nestjs-starter/compare/v1.2.0...v1.2.1) (2025-05-17)
+
+
+### Performance Improvements
+
+* enhance ci performance with caching & concurrency limits ([#17](https://github.com/dhiazfathra/nestjs-starter/issues/17)) ([d746aef](https://github.com/dhiazfathra/nestjs-starter/commit/d746aef2906278a0e056b498622af7b682592d67))
+
 # [1.2.0](https://github.com/dhiazfathra/nestjs-starter/compare/v1.1.0...v1.2.0) (2025-05-17)
 
 
