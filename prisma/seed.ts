@@ -3,6 +3,14 @@ import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
+/**
+ * Seeds the database with an admin and a regular user, creating them if they do not exist.
+ *
+ * The users are initialized with predefined emails, names, roles, and a securely hashed password.
+ *
+ * @remark
+ * If the users already exist, no updates are made to their records.
+ */
 async function main() {
   const saltRounds = 10;
   const hashedPassword = await bcrypt.hash('admin123', saltRounds);
