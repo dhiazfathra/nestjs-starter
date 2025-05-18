@@ -315,6 +315,13 @@ REDIS_HOST=redis  # Use 'localhost' for local development
 
 ### Building the Docker Image Separately
 
+This project uses a multi-stage Docker build process for optimized production images:
+
+1. **Builder Stage**: Installs dependencies, generates Prisma client, builds the application, and prunes development dependencies
+2. **Production Stage**: Creates a minimal production image with only the necessary runtime files
+
+This approach significantly reduces the final image size and improves security by excluding development dependencies and build tools from the production environment.
+
 ```bash
 # Build the image
 $ docker build -t nestjs-starter .
