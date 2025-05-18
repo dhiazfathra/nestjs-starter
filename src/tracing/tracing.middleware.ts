@@ -1,6 +1,6 @@
-import { Injectable, NestMiddleware, Logger } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
-import { trace, SpanStatusCode } from '@opentelemetry/api';
+import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
+import { SpanStatusCode, trace } from '@opentelemetry/api';
+import { NextFunction, Request, Response } from 'express';
 
 @Injectable()
 export class TracingMiddleware implements NestMiddleware {

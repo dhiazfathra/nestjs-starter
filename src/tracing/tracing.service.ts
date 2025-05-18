@@ -1,13 +1,13 @@
 import {
   Injectable,
-  OnModuleInit,
-  OnApplicationShutdown,
   Logger,
+  OnApplicationShutdown,
+  OnModuleInit,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { NodeSDK } from '@opentelemetry/sdk-node';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 import { JaegerExporter } from '@opentelemetry/exporter-jaeger';
+import { NodeSDK } from '@opentelemetry/sdk-node';
 
 import { diag, DiagConsoleLogger, DiagLogLevel } from '@opentelemetry/api';
 

@@ -1,6 +1,6 @@
+import { SpanStatusCode, trace } from '@opentelemetry/api';
+import { NextFunction, Request, Response } from 'express';
 import { TracingMiddleware } from './tracing.middleware';
-import { trace, SpanStatusCode } from '@opentelemetry/api';
-import { Request, Response, NextFunction } from 'express';
 
 // Mock the OpenTelemetry trace API
 jest.mock('@opentelemetry/api', () => {

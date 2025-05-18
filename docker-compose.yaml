@@ -118,7 +118,7 @@ services:
       - prometheus
     networks:
       - nestjs-network
-      
+
   jaeger:
     image: jaegertracing/all-in-one:latest
     container_name: nestjs-starter-jaeger
