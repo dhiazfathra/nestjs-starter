@@ -1,0 +1,175 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigService } from '@nestjs/config';
+import { TracingService } from './tracing.service';
+import { NodeSDK } from '@opentelemetry/sdk-node';
+import { JaegerExporter } from '@opentelemetry/exporter-jaeger';
+import { diag, DiagConsoleLogger, DiagLogLevel } from '@opentelemetry/api';
+
+// Mock OpenTelemetry modules
+jest.mock('@opentelemetry/sdk-node', () => {
+  return {
+    NodeSDK: jest.fn().mockImplementation(() => {
+      return {
+        start: jest.fn().mockResolvedValue(undefined),
+        shutdown: jest.fn().mockResolvedValue(undefined),
+      };
+    }),
+  };
+});
+
+jest.mock('@opentelemetry/exporter-jaeger', () => {
+  return {
+    JaegerExporter: jest.fn().mockImplementation(() => ({})),
+  };
+});
+
+jest.mock('@opentelemetry/auto-instrumentations-node', () => {
+  return {
+    getNodeAutoInstrumentations: jest.fn().mockReturnValue([]),
+  };
+});
+
+jest.mock('@opentelemetry/api', () => {
+  return {
+    diag: {
+      setLogger: jest.fn(),
+    },
+    DiagConsoleLogger: jest.fn(),
+    DiagLogLevel: {
+      INFO: 'INFO',
+    },
+  };
+});
+
+describe('TracingService', () => {
+  let service: TracingService;
+  let configService: ConfigService;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        TracingService,
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn((key, defaultValue) => {
+              const config = {
+                JAEGER_HOST: 'localhost',
+                JAEGER_PORT: 6831,
+              };
+              return config[key] || defaultValue;
+            }),
+          },
+        },
+      ],
+    }).compile();
+
+    service = module.get<TracingService>(TracingService);
+    configService = module.get<ConfigService>(ConfigService);
+  });
+
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+
+  describe('constructor', () => {
+    it('should initialize the SDK with correct configuration', () => {
+      // Verify diag logger was set
+      expect(diag.setLogger).toHaveBeenCalledWith(
+        expect.any(DiagConsoleLogger),
+        DiagLogLevel.INFO,
+      );
+
+      // Verify JaegerExporter was created with correct config
+      expect(JaegerExporter).toHaveBeenCalledWith({
+        host: 'localhost',
+        port: 6831,
+      });
+
+      // Verify NodeSDK was created
+      expect(NodeSDK).toHaveBeenCalledWith(
+        expect.objectContaining({
+          serviceName: 'nestjs-starter',
+        }),
+      );
+    });
+
+    it('should use default values when config is missing', () => {
+      jest
+        .spyOn(configService, 'get')
+        .mockImplementation((key, defaultValue) => defaultValue);
+
+      new TracingService(configService);
+
+      expect(JaegerExporter).toHaveBeenCalledWith({
+        host: 'localhost',
+        port: 6831,
+      });
+    });
+  });
+
+  describe('onModuleInit', () => {
+    it('should start the SDK', async () => {
+      await service.onModuleInit();
+
+      // Access private property for testing
+      const sdk = (service as any).sdk;
+      expect(sdk.start).toHaveBeenCalled();
+    });
+
+    it('should handle errors when starting the SDK', async () => {
+      // Mock console.error to prevent test output pollution
+      const originalConsoleError = console.error;
+      console.error = jest.fn();
+
+      // Mock SDK start to throw an error
+      const sdk = (service as any).sdk;
+      sdk.start.mockRejectedValueOnce(new Error('Test error'));
+
+      // Spy on logger
+      const loggerErrorSpy = jest.spyOn((service as any).logger, 'error');
+
+      await service.onModuleInit();
+
+      expect(loggerErrorSpy).toHaveBeenCalledWith(
+        'Error initializing Jaeger tracing',
+        expect.any(Error),
+      );
+
+      // Restore console.error
+      console.error = originalConsoleError;
+    });
+  });
+
+  describe('onApplicationShutdown', () => {
+    it('should shutdown the SDK', async () => {
+      await service.onApplicationShutdown();
+
+      const sdk = (service as any).sdk;
+      expect(sdk.shutdown).toHaveBeenCalled();
+    });
+
+    it('should handle errors when shutting down the SDK', async () => {
+      // Mock console.error to prevent test output pollution
+      const originalConsoleError = console.error;
+      console.error = jest.fn();
+
+      // Mock SDK shutdown to throw an error
+      const sdk = (service as any).sdk;
+      sdk.shutdown.mockRejectedValueOnce(new Error('Test error'));
+
+      // Spy on logger
+      const loggerErrorSpy = jest.spyOn((service as any).logger, 'error');
+
+      await service.onApplicationShutdown();
+
+      expect(loggerErrorSpy).toHaveBeenCalledWith(
+        'Error shutting down Jaeger tracing',
+        expect.any(Error),
+      );
+
+      // Restore console.error
+      console.error = originalConsoleError;
+    });
+  });
+});
