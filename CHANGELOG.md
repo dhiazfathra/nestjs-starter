@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/dhiazfathra/nestjs-starter/compare/v1.2.1...v1.3.0) (2025-05-18)
+
+
+### Features
+
+* add Docker support with multi-container setup for app, Postgres, & Redis ([#19](https://github.com/dhiazfathra/nestjs-starter/issues/19)) ([790a4d7](https://github.com/dhiazfathra/nestjs-starter/commit/790a4d7a4ea3f069189da5dad1cfde0db7c2af06))
+
 ## [1.2.1](https://github.com/dhiazfathra/nestjs-starter/compare/v1.2.0...v1.2.1) (2025-05-17)
 
 
