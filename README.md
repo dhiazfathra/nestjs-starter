@@ -40,6 +40,7 @@ A NestJS TypeScript starter project with user authentication, following best pra
 - Node.js (v14 or later)
 - npm or yarn
 - PostgreSQL database
+- Docker and Docker Compose (optional, for containerized setup)
 
 ## Installation
 
@@ -251,6 +252,117 @@ This project is configured with Codecov Test Analytics to provide insights into 
 - Detection of flaky tests that fail intermittently
 
 Test results are automatically uploaded to Codecov during CI runs via GitHub Actions. The workflow generates JUnit XML test reports and uploads them alongside coverage reports using the Codecov Test Results Action.
+
+## Docker Setup
+
+This project includes Docker support for easy deployment and development.
+
+### Requirements
+
+- Docker version 20.10.0 or higher
+- Docker Compose V2 (2.0.0 or higher)
+
+Older versions may cause compatibility issues with the healthchecks and Docker Compose commands used in this project.
+
+### Using Docker Compose
+
+This project uses Docker Compose to manage multiple services (NestJS app, PostgreSQL, and Redis). The commands below use Docker Compose V2 syntax (without hyphen):
+
+```bash
+# Start all services (app, database, and Redis)
+$ docker compose up -d
+
+# Start all services (app, database, and Redis) for Apple Silicon (M1/M2/etc)
+$ DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose up -d
+
+# View logs
+$ docker compose logs -f
+
+# Stop all services
+$ docker compose down
+
+# Rebuild containers after making changes to Dockerfile
+$ docker compose up -d --build
+
+# Check application health
+$ curl http://localhost:3000/api/health
+```
+
+### Health Check
+
+The application includes a health check endpoint at `/api/health` that returns a status object:
+
+```json
+{
+  "status": "ok",
+  "timestamp": "<ISO8601_timestamp>"
+}
+```
+
+This endpoint is used by the Docker validation workflow to verify that the application is functioning correctly.
+
+### Environment Variables for Docker
+
+When using Docker, you can configure these additional environment variables in your `.env` file:
+
+```env
+# PostgreSQL Docker Configuration
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=nestjs
+
+# Redis Configuration
+# For Docker environment, use the service name
+REDIS_HOST=redis  # Use 'localhost' for local development
+```
+
+### Building the Docker Image Separately
+
+This project uses a multi-stage Docker build process for optimized production images:
+
+1. **Builder Stage**: Installs dependencies, generates Prisma client, builds the application, and prunes development dependencies
+2. **Production Stage**: Creates a minimal production image with only the necessary runtime files
+
+This approach significantly reduces the final image size and improves security by excluding development dependencies and build tools from the production environment.
+
+```bash
+# Build the image
+$ docker build -t nestjs-starter .
+
+# Run the container
+$ docker run -p 3000:3000 --env-file .env nestjs-starter
+```
+
+## Testing GitHub Actions Locally
+
+This project includes several GitHub Actions workflows for CI/CD. You can test these workflows locally using [Act](https://github.com/nektos/act), a tool that runs GitHub Actions locally using Docker.
+
+### Prerequisites
+
+- Docker installed and running
+- [Act](https://github.com/nektos/act) installed (`brew install act` on macOS)
+
+### Running Workflows Locally
+
+```bash
+# List all available workflows
+$ act -l
+
+# Run the Docker validation workflow
+$ act -j validate-docker-compose --container-architecture linux/amd64
+
+# Run a specific job with verbose output
+$ act -j validate-docker-compose -v
+
+# Run a workflow with specific event
+$ act push
+```
+
+### Troubleshooting Act
+
+- If you're using Apple Silicon (M1/M2/M3), add `--container-architecture linux/amd64` to avoid platform compatibility issues
+- Use `-v` flag for verbose output to debug issues
+- Check container logs with `docker logs` if a job fails
 
 ## License
 
