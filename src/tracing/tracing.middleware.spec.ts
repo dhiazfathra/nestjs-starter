@@ -1,6 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { TracingMiddleware } from './tracing.middleware';
-import { trace, SpanStatusCode, context, Span } from '@opentelemetry/api';
+import { trace, SpanStatusCode } from '@opentelemetry/api';
+import { Request, Response, NextFunction } from 'express';
 
 // Mock the OpenTelemetry trace API
 jest.mock('@opentelemetry/api', () => {
@@ -30,17 +30,26 @@ jest.mock('@opentelemetry/api', () => {
 
 describe('TracingMiddleware', () => {
   let middleware: TracingMiddleware;
-  let mockRequest: any;
-  let mockResponse: any;
+
+  let mockRequest: Partial<Request>;
+  let mockResponse: Partial<Response> & { end: jest.Mock };
   let mockNext: jest.Mock;
-  let mockTracer: any;
-  let mockSpan: any;
+  let mockTracer: {
+    startSpan: jest.Mock;
+  };
+  let mockSpan: {
+    setAttributes: jest.Mock;
+    setStatus: jest.Mock;
+    end: jest.Mock;
+  };
 
   beforeEach(async () => {
     middleware = new TracingMiddleware();
 
     // Reset mocks
-    mockTracer = trace.getTracer('nestjs-http');
+    mockTracer = trace.getTracer('nestjs-http') as unknown as {
+      startSpan: jest.Mock;
+    };
     mockSpan = mockTracer.startSpan('test');
 
     // Mock request
@@ -52,13 +61,13 @@ describe('TracingMiddleware', () => {
         'user-agent': 'test-agent',
         'x-request-id': 'test-id',
       },
-    };
+    } as Partial<Request>;
 
     // Mock response
     mockResponse = {
       statusCode: 200,
       end: jest.fn(),
-    };
+    } as Partial<Response> & { end: jest.Mock };
 
     // Mock next function
     mockNext = jest.fn();
@@ -70,7 +79,11 @@ describe('TracingMiddleware', () => {
 
   describe('use', () => {
     it('should create a span with request attributes', () => {
-      middleware.use(mockRequest, mockResponse, mockNext);
+      middleware.use(
+        mockRequest as Request,
+        mockResponse as unknown as Response,
+        mockNext as NextFunction,
+      );
 
       // Verify span was created with correct name
       expect(mockTracer.startSpan).toHaveBeenCalledWith('HTTP GET /test');
@@ -92,9 +105,13 @@ describe('TracingMiddleware', () => {
       const requestWithoutHeaders = {
         ...mockRequest,
         headers: {},
-      };
+      } as Partial<Request>;
 
-      middleware.use(requestWithoutHeaders, mockResponse, mockNext);
+      middleware.use(
+        requestWithoutHeaders as Request,
+        mockResponse as unknown as Response,
+        mockNext as NextFunction,
+      );
 
       expect(mockSpan.setAttributes).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -105,7 +122,11 @@ describe('TracingMiddleware', () => {
     });
 
     it('should override response.end to capture response data', () => {
-      middleware.use(mockRequest, mockResponse, mockNext);
+      middleware.use(
+        mockRequest as Request,
+        mockResponse as unknown as Response,
+        mockNext as NextFunction,
+      );
 
       // Original end function should be replaced
       expect(mockResponse.end).not.toBe(jest.fn());
@@ -126,7 +147,11 @@ describe('TracingMiddleware', () => {
     it('should mark span as error for 4xx status codes', () => {
       mockResponse.statusCode = 404;
 
-      middleware.use(mockRequest, mockResponse, mockNext);
+      middleware.use(
+        mockRequest as Request,
+        mockResponse as unknown as Response,
+        mockNext as NextFunction,
+      );
       mockResponse.end();
 
       expect(mockSpan.setStatus).toHaveBeenCalledWith({
@@ -138,7 +163,11 @@ describe('TracingMiddleware', () => {
     it('should mark span as error for 5xx status codes', () => {
       mockResponse.statusCode = 500;
 
-      middleware.use(mockRequest, mockResponse, mockNext);
+      middleware.use(
+        mockRequest as Request,
+        mockResponse as unknown as Response,
+        mockNext as NextFunction,
+      );
       mockResponse.end();
 
       expect(mockSpan.setStatus).toHaveBeenCalledWith({

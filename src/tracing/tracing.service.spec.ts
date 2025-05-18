@@ -113,7 +113,7 @@ describe('TracingService', () => {
       await service.onModuleInit();
 
       // Access private property for testing
-      const sdk = (service as any).sdk;
+      const sdk = (service as unknown as { sdk: NodeSDK }).sdk;
       expect(sdk.start).toHaveBeenCalled();
     });
 
@@ -123,11 +123,26 @@ describe('TracingService', () => {
       console.error = jest.fn();
 
       // Mock SDK start to throw an error
-      const sdk = (service as any).sdk;
+      type ServiceWithSdk = {
+        sdk: {
+          start: {
+            mockRejectedValueOnce: (error: Error) => void;
+          };
+        };
+      };
+      const sdk = (service as unknown as ServiceWithSdk).sdk;
       sdk.start.mockRejectedValueOnce(new Error('Test error'));
 
       // Spy on logger
-      const loggerErrorSpy = jest.spyOn((service as any).logger, 'error');
+      type ServiceWithLogger = {
+        logger: {
+          error: (message: string, error: Error) => void;
+        };
+      };
+      const loggerErrorSpy = jest.spyOn(
+        (service as unknown as ServiceWithLogger).logger,
+        'error',
+      );
 
       await service.onModuleInit();
 
@@ -145,7 +160,12 @@ describe('TracingService', () => {
     it('should shutdown the SDK', async () => {
       await service.onApplicationShutdown();
 
-      const sdk = (service as any).sdk;
+      type ServiceWithSdk = {
+        sdk: {
+          shutdown: jest.Mock;
+        };
+      };
+      const sdk = (service as unknown as ServiceWithSdk).sdk;
       expect(sdk.shutdown).toHaveBeenCalled();
     });
 
@@ -155,11 +175,26 @@ describe('TracingService', () => {
       console.error = jest.fn();
 
       // Mock SDK shutdown to throw an error
-      const sdk = (service as any).sdk;
+      type ServiceWithSdk = {
+        sdk: {
+          shutdown: {
+            mockRejectedValueOnce: (error: Error) => void;
+          };
+        };
+      };
+      const sdk = (service as unknown as ServiceWithSdk).sdk;
       sdk.shutdown.mockRejectedValueOnce(new Error('Test error'));
 
       // Spy on logger
-      const loggerErrorSpy = jest.spyOn((service as any).logger, 'error');
+      type ServiceWithLogger = {
+        logger: {
+          error: (message: string, error: Error) => void;
+        };
+      };
+      const loggerErrorSpy = jest.spyOn(
+        (service as unknown as ServiceWithLogger).logger,
+        'error',
+      );
 
       await service.onApplicationShutdown();
 
