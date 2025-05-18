@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
-import { TracingService } from './tracing.service';
-import { NodeSDK } from '@opentelemetry/sdk-node';
-import { JaegerExporter } from '@opentelemetry/exporter-jaeger';
+import { Test, TestingModule } from '@nestjs/testing';
 import { diag, DiagConsoleLogger, DiagLogLevel } from '@opentelemetry/api';
+import { JaegerExporter } from '@opentelemetry/exporter-jaeger';
+import { NodeSDK } from '@opentelemetry/sdk-node';
+import { TracingService } from './tracing.service';
 
 // Mock OpenTelemetry modules
 jest.mock('@opentelemetry/sdk-node', () => {

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { TracingService } from './tracing.service';
 import { TracingController } from './tracing.controller';
+import { TracingService } from './tracing.service';
 
 @Module({
   controllers: [TracingController],
