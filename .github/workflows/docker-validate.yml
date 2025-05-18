@@ -139,22 +139,33 @@ jobs:
         run: |
           # Apply platform setting and start services
           DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose up -d
-          echo "Waiting for services to be healthy..."
-          
-          # Wait for all services to be healthy (timeout after 2 minutes)
-          timeout 120s bash -c 'until [ "$(docker compose ps --format "{{.Name}}:{{.Status}}" | grep -c "healthy")" -eq "3" ]; do 
-            echo "Waiting for services to become healthy..." 
+
+      # Validate that all services are healthy
+      - name: Validate services are healthy
+        run: |
+          # Wait for all services to be healthy
+          timeout 180s bash -c 'until [ "$(docker compose ps --format "{{.Name}}:{{.Status}}" | grep -c "healthy")" -eq "3" ]; do 
+            echo "Waiting for services to become healthy..."
             docker compose ps
+            # Show logs from the app container if it's restarting
+            if [[ "$(docker compose ps app --format "{{.Status}}")" == *"Restarting"* ]]; then
+              echo "App container is restarting, showing logs:"
+              docker compose logs app --tail 50
+            fi
             sleep 5
-          done' || {
-            echo "Services did not become healthy within timeout period"
-            docker compose ps
+          done'
+          
+          # Verify that all services are running and healthy
+          docker compose ps
+          if [ "$(docker compose ps --format "{{.Name}}:{{.Status}}" | grep -c "healthy")" -ne "3" ]; then
+            echo "Not all services are healthy"
             docker compose logs
             exit 1
-          }
+          fi
           
           echo "All services are healthy!"
-          docker compose ps
+          # Test the health endpoint
+          curl -v http://localhost:3001/health
 
       # Check app health using the health endpoint
       - name: Check app health

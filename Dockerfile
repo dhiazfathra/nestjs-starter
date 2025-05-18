@@ -26,6 +26,9 @@ WORKDIR /app
 # Set NODE_ENV to production
 ENV NODE_ENV=production
 
+# Install wget for health checks
+RUN apk add --no-cache wget
+
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
