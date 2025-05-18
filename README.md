@@ -256,6 +256,13 @@ Test results are automatically uploaded to Codecov during CI runs via GitHub Act
 
 This project includes Docker support for easy deployment and development.
 
+### Requirements
+
+- Docker version 20.10.0 or higher
+- Docker Compose V2 (2.0.0 or higher)
+
+Older versions may cause compatibility issues with the healthchecks and Docker Compose commands used in this project.
+
 ### Using Docker Compose
 
 This project uses Docker Compose to manage multiple services (NestJS app, PostgreSQL, and Redis). The commands below use Docker Compose V2 syntax (without hyphen):
