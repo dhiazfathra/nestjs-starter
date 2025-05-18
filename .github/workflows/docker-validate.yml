@@ -169,8 +169,8 @@ jobs:
 
           # Verify that all services are running and healthy
           docker compose ps
-          if [ "$(docker compose ps --format '{{.Name}}:{{.Status}}' | grep -c '(healthy)')" -ne "3" ]; then
-            echo "Not all services are healthy"
+          if [ "$(docker compose ps --format '{{.Name}}:{{.Status}}' | grep -c '(healthy)')" -lt "5" ]; then
+            echo "Not enough services are healthy"
             docker compose logs
             exit 1
           fi
