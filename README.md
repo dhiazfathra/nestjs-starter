@@ -292,7 +292,7 @@ The application includes a health check endpoint at `/health` that returns a sta
 ```json
 {
   "status": "ok",
-  "timestamp": "2025-05-18T06:55:11+07:00"
+  "timestamp": "<ISO8601_timestamp>"
 }
 ```
 
