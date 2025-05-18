@@ -144,28 +144,45 @@ jobs:
       - name: Validate services are healthy
         run: |
           # Wait for all services to be healthy
-          timeout 180s bash -c "until [ \"\$(docker compose ps --format \"{{.Name}}:{{.Status}}\" | grep -c \"healthy\")\" -eq \"3\" ]; do 
-            echo \"Waiting for services to become healthy...\"
+          echo "Waiting for services to become healthy..."
+          
+          # Wait for postgres and redis to be healthy first
+          timeout 120s bash -c "until [ \"\$(docker compose ps postgres redis --format \"{{.Status}}\" | grep -c \"healthy\")\" -eq \"2\" ]; do 
+            echo \"Waiting for postgres and redis to become healthy...\"
             docker compose ps
-            # Show logs from the app container if it's restarting
-            if [[ \"\$(docker compose ps app --format \"{{.Status}}\")\" == *\"Restarting\"* ]]; then
-              echo \"App container is restarting, showing logs:\"
+            sleep 5
+          done"
+          
+          echo "Postgres and Redis are healthy. Waiting for app to become healthy..."
+          
+          # Now wait for the app to be healthy
+          timeout 180s bash -c "until [ \"\$(docker compose ps app --format \"{{.Status}}\" | grep -c \"healthy\")\" -eq \"1\" ]; do 
+            echo \"Waiting for app to become healthy...\"
+            docker compose ps
+            # Show logs from the app container if it's restarting or unhealthy
+            if [[ \"\$(docker compose ps app --format \"{{.Status}}\")\" == *\"Restarting\"* || \"\$(docker compose ps app --format \"{{.Status}}\")\" == *\"unhealthy\"* ]]; then
+              echo \"App container is not healthy, showing logs:\"
               docker compose logs app --tail 50
             fi
-            sleep 5
+            sleep 10
           done"
 
           # Verify that all services are running and healthy
           docker compose ps
-          if [ "$(docker compose ps --format '{{.Name}}:{{.Status}}' | grep -c 'healthy')" -ne "3" ]; then
+          if [ "$(docker compose ps --format '{{.Name}}:{{.Status}}' | grep -c '(healthy)')" -ne "3" ]; then
             echo "Not all services are healthy"
             docker compose logs
             exit 1
           fi
 
           echo "All services are healthy!"
+          
+          # Wait a moment for the app to be fully ready
+          sleep 10
+          
           # Test the health endpoint
-          curl -v http://localhost:3001/health
+          echo "Testing health endpoint..."
+          curl -v --retry 3 --retry-delay 2 --retry-connrefused http://localhost:3001/health
 
       # Check app health using the health endpoint
       - name: Check app health
