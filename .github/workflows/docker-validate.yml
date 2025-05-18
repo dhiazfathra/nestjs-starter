@@ -119,7 +119,7 @@ jobs:
           echo "POSTGRES_PASSWORD=postgres" >> .env
           echo "POSTGRES_DB=nestjs" >> .env
           echo "POSTGRES_PORT=5433" >> .env
-          
+
           # Display the .env file for debugging
           echo "Contents of .env file:"
           cat .env
@@ -144,25 +144,25 @@ jobs:
       - name: Validate services are healthy
         run: |
           # Wait for all services to be healthy
-          timeout 180s bash -c 'until [ "$(docker compose ps --format "{{.Name}}:{{.Status}}" | grep -c "healthy")" -eq "3" ]; do 
-            echo "Waiting for services to become healthy..."
+          timeout 180s bash -c "until [ \"\$(docker compose ps --format \"{{.Name}}:{{.Status}}\" | grep -c \"healthy\")\" -eq \"3\" ]; do 
+            echo \"Waiting for services to become healthy...\"
             docker compose ps
             # Show logs from the app container if it's restarting
-            if [[ "$(docker compose ps app --format "{{.Status}}")" == *"Restarting"* ]]; then
-              echo "App container is restarting, showing logs:"
+            if [[ \"\$(docker compose ps app --format \"{{.Status}}\")\" == *\"Restarting\"* ]]; then
+              echo \"App container is restarting, showing logs:\"
               docker compose logs app --tail 50
             fi
             sleep 5
-          done'
-          
+          done"
+
           # Verify that all services are running and healthy
           docker compose ps
-          if [ "$(docker compose ps --format "{{.Name}}:{{.Status}}" | grep -c "healthy")" -ne "3" ]; then
+          if [ "$(docker compose ps --format '{{.Name}}:{{.Status}}' | grep -c 'healthy')" -ne "3" ]; then
             echo "Not all services are healthy"
             docker compose logs
             exit 1
           fi
-          
+
           echo "All services are healthy!"
           # Test the health endpoint
           curl -v http://localhost:3001/health
@@ -176,14 +176,14 @@ jobs:
             docker compose logs app
             exit 1
           }
-          
+
           # Then check the health endpoint
           timeout 30s bash -c 'until curl -s http://localhost:3001/health | grep -q "status":"ok"; do sleep 2; done' || {
             echo "Health check failed"
             docker compose logs app
             exit 1
           }
-          
+
           echo "Health check passed successfully"
           curl -s http://localhost:3001/health
 
