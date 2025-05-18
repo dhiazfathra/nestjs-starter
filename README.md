@@ -272,6 +272,9 @@ This project uses Docker Compose to manage multiple services (NestJS app, Postgr
 # Start all services (app, database, and Redis)
 $ docker compose up -d
 
+# Start all services (app, database, and Redis) for Apple Silicon (M1/M2/etc)
+$ DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose up -d
+
 # View logs
 $ docker compose logs -f
 
