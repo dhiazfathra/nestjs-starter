@@ -131,7 +131,7 @@ jobs:
             echo "docker-compose.yml is not valid"
             exit 1
           fi
-          
+         
           echo "Docker Compose configuration is valid"
 
       # Start services with docker compose using healthchecks
@@ -145,18 +145,18 @@ jobs:
         run: |
           # Wait for all services to be healthy
           echo "Waiting for services to become healthy..."
-          
+         
           # Wait for postgres and redis to be healthy first
-          timeout 120s bash -c "until [ \"\$(docker compose ps postgres redis --format \"{{.Status}}\" | grep -c \"healthy\")\" -eq \"2\" ]; do 
+          timeout 120s bash -c "until [ \"\$(docker compose ps postgres redis --format \"{{.Status}}\" | grep -c \"healthy\")\" -eq \"2\" ]; do
             echo \"Waiting for postgres and redis to become healthy...\"
             docker compose ps
             sleep 5
           done"
-          
+         
           echo "Postgres and Redis are healthy. Waiting for app to become healthy..."
-          
+         
           # Now wait for the app to be healthy
-          timeout 180s bash -c "until [ \"\$(docker compose ps app --format \"{{.Status}}\" | grep -c \"healthy\")\" -eq \"1\" ]; do 
+          timeout 180s bash -c "until [ \"\$(docker compose ps app --format \"{{.Status}}\" | grep -c \"healthy\")\" -eq \"1\" ]; do
             echo \"Waiting for app to become healthy...\"
             docker compose ps
             # Show logs from the app container if it's restarting or unhealthy
@@ -169,17 +169,17 @@ jobs:
 
           # Verify that all services are running and healthy
           docker compose ps
-          if [ "$(docker compose ps --format '{{.Name}}:{{.Status}}' | grep -c '(healthy)')" -ne "3" ]; then
-            echo "Not all services are healthy"
+          if [ "$(docker compose ps --format '{{.Name}}:{{.Status}}' | grep -c '(healthy)')" -lt "5" ]; then
+            echo "Not enough services are healthy"
             docker compose logs
             exit 1
           fi
 
           echo "All services are healthy!"
-          
+         
           # Wait a moment for the app to be fully ready
           sleep 10
-          
+         
           # Test the health endpoint
           echo "Testing health endpoint..."
           curl -v --retry 3 --retry-delay 2 --retry-connrefused http://localhost:3000/api

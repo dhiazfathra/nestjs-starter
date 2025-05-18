@@ -34,6 +34,7 @@ A NestJS TypeScript starter project with user authentication, following best pra
 - ✅ **Validation** - Request validation using class-validator
 - 🔄 **Environment Configuration** - Using dotenv and NestJS ConfigModule
 - 📚 **API Documentation** - Swagger/OpenAPI and Scalar API Reference
+- 📊 **Monitoring** - Grafana and Prometheus for metrics and monitoring
 
 ## Prerequisites
 
@@ -363,6 +364,40 @@ $ act push
 - If you're using Apple Silicon (M1/M2/M3), add `--container-architecture linux/amd64` to avoid platform compatibility issues
 - Use `-v` flag for verbose output to debug issues
 - Check container logs with `docker logs` if a job fails
+
+## Monitoring with Grafana and Prometheus
+
+This project includes a comprehensive monitoring setup using Grafana and Prometheus, providing real-time insights into application performance and health.
+
+### Features
+
+- **Real-time Metrics**: Monitor HTTP request rates, response times, memory usage, and CPU utilization
+- **Pre-configured Dashboards**: Ready-to-use Grafana dashboards for NestJS applications
+- **Automatic Service Discovery**: Prometheus automatically discovers and monitors services
+- **Health Checks**: Integrated health endpoints for monitoring application and database status
+
+### Accessing Monitoring Tools
+
+- **Prometheus**: Available at http://localhost:9090 when running with Docker Compose
+- **Grafana**: Available at http://localhost:3001 when running with Docker Compose
+  - Default credentials: admin/admin
+
+### Custom Metrics
+
+The application exposes custom metrics through the `/metrics` endpoint, which Prometheus scrapes at regular intervals. Key metrics include:
+
+- HTTP request counts by endpoint and status code
+- Request duration histograms
+- In-progress request counts
+- Node.js runtime metrics (memory, CPU, event loop)
+
+### Adding Custom Dashboards
+
+To add custom Grafana dashboards:
+
+1. Create a JSON dashboard definition in `monitoring/grafana/provisioning/dashboards/`
+2. Update the dashboard configuration in `monitoring/grafana/provisioning/dashboards/dashboards.yml`
+3. Restart the Grafana container
 
 ## License
 
