@@ -132,42 +132,27 @@ jobs:
           echo "Contents of .env file:"
           cat .env
 
-      # Start services with docker compose with resource limits
+      # Start services with docker compose using healthchecks
       - name: Start services with docker compose
         run: |
-          # Apply resource limits directly to docker compose
+          # Apply platform setting and start services
           DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose up -d
-          # Give services time to start
-          sleep 10
-
-      - name: Check if services are running
-        run: |
-          if [ "$(docker compose ps -q | wc -l)" -ne "3" ]; then
-            echo "Not all services are running"
+          echo "Waiting for services to be healthy..."
+          
+          # Wait for all services to be healthy (timeout after 2 minutes)
+          timeout 120s bash -c 'until [ "$(docker compose ps --format "{{.Name}}:{{.Status}}" | grep -c "healthy")" -eq "3" ]; do 
+            echo "Waiting for services to become healthy..." 
+            docker compose ps
+            sleep 5
+          done' || {
+            echo "Services did not become healthy within timeout period"
+            docker compose ps
             docker compose logs
             exit 1
-          fi
+          }
           
-          # Check app service
-          if ! docker compose ps app | grep -q "Up"; then
-            echo "App service is not running"
-            docker compose logs app
-            exit 1
-          fi
-          
-          # Check postgres service
-          if ! docker compose ps postgres | grep -q "Up"; then
-            echo "Postgres service is not running"
-            docker compose logs postgres
-            exit 1
-          fi
-          
-          # Check redis service
-          if ! docker compose ps redis | grep -q "Up"; then
-            echo "Redis service is not running"
-            docker compose logs redis
-            exit 1
-          fi
+          echo "All services are healthy!"
+          docker compose ps
 
       # Check app health using the health endpoint
       - name: Check app health
