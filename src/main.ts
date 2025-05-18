@@ -1,10 +1,12 @@
 import { ValidationPipe } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { apiReference } from '@scalar/nestjs-api-reference';
 import { AppModule } from './app.module';
 import { CustomScalars } from './common/scalars';
+import { AppThrottlerGuard } from './common/guards/throttler.guard';
 
 /**
  * Initializes and starts the NestJS application with global configuration.
@@ -29,6 +31,12 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  // Apply rate limiting globally
+  const reflector = app.get(Reflector);
+  // The ThrottlerGuard from @nestjs/throttler requires a reflector instance
+  // Additional arguments may be required depending on your NestJS version
+  app.useGlobalGuards(new AppThrottlerGuard(reflector));
 
   // Setup Swagger documentation
   const config = new DocumentBuilder()

@@ -30,6 +30,7 @@ A NestJS TypeScript starter project with user authentication, following best pra
 - 🔑 **Role-Based Access Control** - User and Admin roles with proper guards
 - 🗃️ **Database Integration** - PostgreSQL with Prisma ORM
 - 🚀 **Redis Caching** - Performance optimization with Redis-based caching
+- 🛡️ **Rate Limiting** - Protection against abuse and DoS attacks
 - 📊 **Bundle Analysis** - Monitor and optimize bundle size with Codecov integration
 - ✅ **Validation** - Request validation using class-validator
 - 🔄 **Environment Configuration** - Using dotenv and NestJS ConfigModule
@@ -465,6 +466,56 @@ To add custom Grafana dashboards:
 1. Create a JSON dashboard definition in `monitoring/grafana/provisioning/dashboards/`
 2. Update the dashboard configuration in `monitoring/grafana/provisioning/dashboards/dashboards.yml`
 3. Restart the Grafana container
+
+## Rate Limiting
+
+This project includes a robust rate limiting implementation to protect your API from abuse and DoS attacks.
+
+### Features
+
+- **Global Rate Limiting**: Limits API requests to 10 requests per minute by default
+- **IP-Based Tracking**: Identifies clients by their IP address
+- **Customizable Limits**: Easily configure different rate limits for different routes
+- **Exclusion Support**: Ability to exclude specific routes from rate limiting
+
+### Configuration
+
+Rate limiting is configured in the `app.module.ts` file:
+
+```typescript
+ThrottlerModule.forRoot([{
+  ttl: 60, // time to live in seconds
+  limit: 10, // the maximum number of requests within the TTL
+}]),
+```
+
+### Excluding Routes from Rate Limiting
+
+You can exclude specific routes from rate limiting using the `@SkipThrottle()` decorator:
+
+```typescript
+import { SkipThrottle } from './common/decorators/skip-throttle.decorator';
+
+@SkipThrottle()
+@Get('health')
+checkHealth() {
+  return { status: 'ok' };
+}
+```
+
+You can also exclude entire controllers:
+
+```typescript
+@SkipThrottle()
+@Controller('health')
+export class HealthController {
+  // All routes in this controller will be excluded from rate limiting
+}
+```
+
+### Custom Rate Limiting Logic
+
+The rate limiting implementation can be customized by extending the `AppThrottlerGuard` class in `src/common/guards/throttler.guard.ts`. This allows you to implement custom tracking logic, such as using user IDs for authenticated users or combining IP addresses with route paths.
 
 ## License
 

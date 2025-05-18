@@ -1,5 +1,6 @@
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -16,6 +17,10 @@ import { TracingMiddleware } from './tracing/tracing.middleware';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ThrottlerModule.forRoot([{
+      ttl: 60, // time to live in seconds
+      limit: 10, // the maximum number of requests within the TTL
+    }]),
     RedisCacheModule,
     PrismaModule,
     UsersModule,
