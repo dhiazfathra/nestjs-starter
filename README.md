@@ -285,12 +285,12 @@ $ docker compose down
 $ docker compose up -d --build
 
 # Check application health
-$ curl http://localhost:3000/health
+$ curl http://localhost:3000/api/health
 ```
 
 ### Health Check
 
-The application includes a health check endpoint at `/health` that returns a status object:
+The application includes a health check endpoint at `/api/health` that returns a status object:
 
 ```json
 {
