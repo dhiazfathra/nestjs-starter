@@ -95,7 +95,7 @@ async function bootstrap() {
   await app.listen(port);
   console.log(`Application is running on: http://localhost:${port}/api`);
   console.log(
-    `API Documentation available at: http://localhost:${port}/api/docs`,
+    `Swagger API Documentation available at: http://localhost:${port}/api/docs`,
   );
   console.log(
     `Scalar API Reference available at: http://localhost:${port}/api/reference`,

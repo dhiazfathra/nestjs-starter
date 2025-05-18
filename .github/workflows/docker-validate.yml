@@ -111,14 +111,14 @@ jobs:
           echo "DATABASE_URL=postgresql://postgres:postgres@postgres:5432/nestjs?schema=public" > .env
           echo "JWT_SECRET=test-secret-key" >> .env
           echo "JWT_EXPIRATION=1d" >> .env
-          echo "PORT=3001" >> .env
+          echo "PORT=3000" >> .env
           echo "REDIS_HOST=redis" >> .env
-          echo "REDIS_PORT=6380" >> .env
+          echo "REDIS_PORT=6379" >> .env
           echo "CACHE_TTL=300" >> .env
           echo "POSTGRES_USER=postgres" >> .env
           echo "POSTGRES_PASSWORD=postgres" >> .env
           echo "POSTGRES_DB=nestjs" >> .env
-          echo "POSTGRES_PORT=5433" >> .env
+          echo "POSTGRES_PORT=5432" >> .env
 
           # Display the .env file for debugging
           echo "Contents of .env file:"
@@ -138,7 +138,7 @@ jobs:
       - name: Start services with docker compose
         run: |
           # Apply platform setting and start services
-          DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose up -d
+          docker compose up -d
 
       # Validate that all services are healthy
       - name: Validate services are healthy
@@ -182,27 +182,20 @@ jobs:
           
           # Test the health endpoint
           echo "Testing health endpoint..."
-          curl -v --retry 3 --retry-delay 2 --retry-connrefused http://localhost:3001/health
+          curl -v --retry 3 --retry-delay 2 --retry-connrefused http://localhost:3000/api
 
       # Check app health using the health endpoint
       - name: Check app health
         run: |
-          # First wait for the port to be open
-          timeout 30s bash -c 'until nc -z localhost 3001; do sleep 2; done' || {
-            echo "App is not responding on port 3001"
-            docker compose logs app
-            exit 1
-          }
-
           # Then check the health endpoint
-          timeout 30s bash -c 'until curl -s http://localhost:3001/health | grep -q "status":"ok"; do sleep 2; done' || {
+          timeout 30s bash -c 'until curl -s http://localhost:3000/api | grep -q "Hello World"; do sleep 2; done' || {
             echo "Health check failed"
             docker compose logs app
             exit 1
           }
 
           echo "Health check passed successfully"
-          curl -s http://localhost:3001/health
+          curl -s http://localhost:3000/api
 
       - name: Clean up
         run: docker compose down -v

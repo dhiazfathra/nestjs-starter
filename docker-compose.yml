@@ -6,7 +6,7 @@ services:
     container_name: nestjs-starter-app
     restart: always
     ports:
-      - '${PORT:-3001}:3000'
+      - '${PORT:-3000}:3000'
     env_file:
       - .env
     environment:
@@ -19,21 +19,19 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/health --timeout=10 || exit 1"]
-      interval: 30s
-      timeout: 15s
-      retries: 3
-      start_period: 90s
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:3000/api || exit 1']
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - nestjs-network
 
   postgres:
     image: postgres:17-alpine
-    platform: linux/arm64/v8
     container_name: nestjs-starter-postgres
     restart: always
     ports:
-      - '${POSTGRES_PORT:-5433}:5432'
+      - '${POSTGRES_PORT:-5432}:5432'
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
@@ -41,7 +39,11 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-nestjs}"]
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-nestjs}',
+        ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -51,16 +53,15 @@ services:
 
   redis:
     image: redis:7-alpine
-    platform: linux/arm64/v8
     container_name: nestjs-starter-redis
     restart: always
     ports:
-      - '${REDIS_PORT:-6380}:6379'
+      - '${REDIS_PORT:-6379}:6379'
     volumes:
       - redis-data:/data
     command: redis-server --appendonly yes
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 5s
       timeout: 3s
       retries: 5

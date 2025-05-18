@@ -26,7 +26,8 @@ WORKDIR /app
 # Set NODE_ENV to production
 ENV NODE_ENV=production
 
-# Install wget and other utilities for health checks
+# Install utilities for health checks
+RUN apk update && apk add netcat-openbsd
 RUN apk add --no-cache wget curl
 
 # Copy built application from builder stage
@@ -40,3 +41,6 @@ EXPOSE 3000
 
 # Start the application
 CMD ["npm", "run", "start:prod"]
+
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD wget -qO- http://localhost:${PORT:-3000}/api || exit 1

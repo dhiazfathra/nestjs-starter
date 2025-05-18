@@ -282,7 +282,7 @@ $ docker compose down
 $ docker compose up -d --build
 
 # Check application health
-$ curl http://localhost:3001/health
+$ curl http://localhost:3000/health
 ```
 
 ### Health Check
