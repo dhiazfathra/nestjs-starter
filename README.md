@@ -35,6 +35,7 @@ A NestJS TypeScript starter project with user authentication, following best pra
 - 🔄 **Environment Configuration** - Using dotenv and NestJS ConfigModule
 - 📚 **API Documentation** - Swagger/OpenAPI and Scalar API Reference
 - 📊 **Monitoring** - Grafana and Prometheus for metrics and monitoring
+- 🔍 **Distributed Tracing** - Jaeger for request tracing and performance analysis
 
 ## Prerequisites
 
@@ -75,6 +76,10 @@ PORT=3000
 REDIS_HOST=localhost
 REDIS_PORT=6379
 CACHE_TTL=300
+
+# Jaeger Configuration
+JAEGER_HOST=localhost
+JAEGER_PORT=6831
 ```
 
 ## Running the app
@@ -202,6 +207,45 @@ const value = await cacheService.getOrSet(
 );
 ```
 
+## Distributed Tracing with Jaeger
+
+This project implements distributed tracing using Jaeger to help monitor and troubleshoot your application, especially in microservices architectures.
+
+### Features
+
+- **Request Tracing** - Track HTTP requests across your application
+- **Performance Analysis** - Identify bottlenecks and slow operations
+- **Error Tracking** - Visualize where errors occur in the request flow
+- **Dependency Visualization** - See how services interact with each other
+
+### Implementation
+
+The distributed tracing system is implemented using:
+
+- `@opentelemetry/api` - OpenTelemetry API for instrumentation
+- `@opentelemetry/sdk-node` - OpenTelemetry SDK for Node.js
+- `@opentelemetry/auto-instrumentations-node` - Auto-instrumentation for Node.js
+- `@opentelemetry/exporter-jaeger` - Jaeger exporter for OpenTelemetry
+
+### Usage
+
+Jaeger UI is available at:
+
+```
+http://localhost:16686
+```
+
+The Jaeger UI provides:
+
+- Search for traces based on service, operation, tags, and duration
+- Detailed trace view with span information
+- Dependency graphs showing service interactions
+- Comparison of multiple traces
+
+### Endpoints
+
+- `GET /api/tracing` - Get information about the tracing setup
+
 ## Project Structure
 
 ```
@@ -217,6 +261,7 @@ const value = await cacheService.getOrSet(
 │   │   ├── enums/       # Enumerations
 │   │   └── scalars/     # Custom scalar types for API docs
 │   ├── prisma/          # Prisma service
+│   ├── tracing/         # Distributed tracing with Jaeger
 │   ├── users/           # Users module
 │   │   ├── dto/         # Data transfer objects
 │   │   └── entities/    # Entity definitions for API docs
@@ -315,6 +360,11 @@ POSTGRES_DB=nestjs
 # Redis Configuration
 # For Docker environment, use the service name
 REDIS_HOST=redis  # Use 'localhost' for local development
+
+# Jaeger Configuration
+# For Docker environment, use the service name
+JAEGER_HOST=jaeger  # Use 'localhost' for local development
+JAEGER_PORT=6831
 ```
 
 ### Building the Docker Image Separately
