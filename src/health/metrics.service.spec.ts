@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MetricsService, register } from './metrics.service';
 import { Counter, Gauge, Histogram, Registry } from 'prom-client';
+import { MetricsService, register } from './metrics.service';
 
 // Mock prom-client
 jest.mock('prom-client', () => {
   const mockInc = jest.fn();
   const mockDec = jest.fn();
   const mockObserve = jest.fn();
-  
+
   return {
     collectDefaultMetrics: jest.fn(),
     Counter: jest.fn().mockImplementation(() => ({
@@ -28,10 +28,10 @@ jest.mock('prom-client', () => {
 
 describe('MetricsService', () => {
   let service: MetricsService;
-  
+
   beforeEach(async () => {
     jest.clearAllMocks();
-    
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [MetricsService],
     }).compile();
@@ -82,9 +82,9 @@ describe('MetricsService', () => {
       const method = 'GET';
       const route = '/api';
       const statusCode = 200;
-      
+
       service.incrementHttpRequestCounter(method, route, statusCode);
-      
+
       expect(service['httpRequestsCounter'].inc).toHaveBeenCalledWith({
         method,
         route,
@@ -99,9 +99,9 @@ describe('MetricsService', () => {
       const route = '/api';
       const statusCode = 200;
       const duration = 0.1;
-      
+
       service.observeHttpRequestDuration(method, route, statusCode, duration);
-      
+
       expect(service['httpRequestDuration'].observe).toHaveBeenCalledWith(
         { method, route, status_code: statusCode },
         duration,
@@ -113,9 +113,9 @@ describe('MetricsService', () => {
     it('should increment the in-progress requests gauge with correct labels', () => {
       const method = 'GET';
       const route = '/api';
-      
+
       service.incrementHttpRequestsInProgress(method, route);
-      
+
       expect(service['httpRequestsInProgress'].inc).toHaveBeenCalledWith({
         method,
         route,
@@ -127,9 +127,9 @@ describe('MetricsService', () => {
     it('should decrement the in-progress requests gauge with correct labels', () => {
       const method = 'GET';
       const route = '/api';
-      
+
       service.decrementHttpRequestsInProgress(method, route);
-      
+
       expect(service['httpRequestsInProgress'].dec).toHaveBeenCalledWith({
         method,
         route,

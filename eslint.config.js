@@ -8,7 +8,7 @@ const compat = new FlatCompat();
 module.exports = [
   // Include base JS config
   js.configs.recommended,
-  
+
   // Convert ESLint legacy config to flat config
   ...compat.config({
     root: true,
@@ -33,7 +33,14 @@ module.exports = [
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/no-unused-vars': ['error', { 'argsIgnorePattern': '^_', 'varsIgnorePattern': '^_', 'destructuredArrayIgnorePattern': '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+        },
+      ],
     },
   }),
 ];

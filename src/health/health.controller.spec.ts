@@ -1,12 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HealthController } from './health.controller';
 import {
   HealthCheckResult,
   HealthCheckService,
   HealthIndicatorResult,
   PrismaHealthIndicator,
 } from '@nestjs/terminus';
+import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '../prisma/prisma.service';
+import { HealthController } from './health.controller';
 
 describe('HealthController', () => {
   let controller: HealthController;
@@ -39,7 +39,9 @@ describe('HealthController', () => {
 
     controller = module.get<HealthController>(HealthController);
     healthCheckService = module.get<HealthCheckService>(HealthCheckService);
-    prismaHealthIndicator = module.get<PrismaHealthIndicator>(PrismaHealthIndicator);
+    prismaHealthIndicator = module.get<PrismaHealthIndicator>(
+      PrismaHealthIndicator,
+    );
     prismaService = module.get<PrismaService>(PrismaService);
   });
 
@@ -53,28 +55,31 @@ describe('HealthController', () => {
       const mockDbResult: HealthIndicatorResult = {
         database: { status: 'up' },
       };
-      
+
       const expectedResult: HealthCheckResult = {
         status: 'ok',
         info: mockDbResult,
         details: mockDbResult,
         error: {},
       };
-      
+
       jest.spyOn(healthCheckService, 'check').mockResolvedValue(expectedResult);
-      jest.spyOn(prismaHealthIndicator, 'pingCheck').mockResolvedValue(mockDbResult);
-      
+      jest
+        .spyOn(prismaHealthIndicator, 'pingCheck')
+        .mockResolvedValue(mockDbResult);
+
       const result = await controller.check();
-      
+
       expect(result).toBe(expectedResult);
       expect(healthCheckService.check).toHaveBeenCalledWith([
         expect.any(Function),
       ]);
 
       // Call the health check function passed to check
-      const healthCheckFn = (healthCheckService.check as jest.Mock).mock.calls[0][0][0];
+      const healthCheckFn = (healthCheckService.check as jest.Mock).mock
+        .calls[0][0][0];
       await healthCheckFn();
-      
+
       expect(prismaHealthIndicator.pingCheck).toHaveBeenCalledWith(
         'database',
         prismaService,

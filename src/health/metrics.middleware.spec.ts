@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Request, Response } from 'express';
 import { MetricsMiddleware } from './metrics.middleware';
 import { MetricsService } from './metrics.service';
-import { Request, Response } from 'express';
 
 describe('MetricsMiddleware', () => {
   let middleware: MetricsMiddleware;
@@ -35,7 +35,10 @@ describe('MetricsMiddleware', () => {
     it('should track request metrics and call next', () => {
       // Mock date for consistent testing
       const now = Date.now();
-      jest.spyOn(Date, 'now').mockReturnValueOnce(now).mockReturnValueOnce(now + 100);
+      jest
+        .spyOn(Date, 'now')
+        .mockReturnValueOnce(now)
+        .mockReturnValueOnce(now + 100);
 
       const req = {
         method: 'GET',
@@ -52,8 +55,10 @@ describe('MetricsMiddleware', () => {
       middleware.use(req, res, next);
 
       // Should increment in-progress counter
-      expect(metricsService.incrementHttpRequestsInProgress).toHaveBeenCalledWith('GET', '/api');
-      
+      expect(
+        metricsService.incrementHttpRequestsInProgress,
+      ).toHaveBeenCalledWith('GET', '/api');
+
       // Should call next
       expect(next).toHaveBeenCalled();
 
@@ -76,10 +81,9 @@ describe('MetricsMiddleware', () => {
         '/api',
         200,
       );
-      expect(metricsService.decrementHttpRequestsInProgress).toHaveBeenCalledWith(
-        'GET',
-        '/api',
-      );
+      expect(
+        metricsService.decrementHttpRequestsInProgress,
+      ).toHaveBeenCalledWith('GET', '/api');
     });
   });
 });
