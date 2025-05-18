@@ -330,6 +330,37 @@ $ docker build -t nestjs-starter .
 $ docker run -p 3000:3000 --env-file .env nestjs-starter
 ```
 
+## Testing GitHub Actions Locally
+
+This project includes several GitHub Actions workflows for CI/CD. You can test these workflows locally using [Act](https://github.com/nektos/act), a tool that runs GitHub Actions locally using Docker.
+
+### Prerequisites
+
+- Docker installed and running
+- [Act](https://github.com/nektos/act) installed (`brew install act` on macOS)
+
+### Running Workflows Locally
+
+```bash
+# List all available workflows
+$ act -l
+
+# Run the Docker validation workflow
+$ act -j validate-docker-compose --container-architecture linux/amd64
+
+# Run a specific job with verbose output
+$ act -j validate-docker-compose -v
+
+# Run a workflow with specific event
+$ act push
+```
+
+### Troubleshooting Act
+
+- If you're using Apple Silicon (M1/M2/M3), add `--container-architecture linux/amd64` to avoid platform compatibility issues
+- Use `-v` flag for verbose output to debug issues
+- Check container logs with `docker logs` if a job fails
+
 ## License
 
 This project is [MIT licensed](LICENSE).
