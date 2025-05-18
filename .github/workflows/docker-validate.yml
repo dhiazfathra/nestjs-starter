@@ -105,14 +105,6 @@ jobs:
           docker pull redis:7-alpine
           docker pull node:22-alpine
 
-      - name: Validate docker-compose.yml
-        run: |
-          docker compose config -q
-          if [ $? -ne 0 ]; then
-            echo "docker-compose.yml is not valid"
-            exit 1
-          fi
-
       - name: Create .env file for testing
         run: |
           # Create a minimal .env file for testing
@@ -127,10 +119,20 @@ jobs:
           echo "POSTGRES_PASSWORD=postgres" >> .env
           echo "POSTGRES_DB=nestjs" >> .env
           echo "POSTGRES_PORT=5433" >> .env
-
+          
           # Display the .env file for debugging
           echo "Contents of .env file:"
           cat .env
+
+      - name: Validate docker-compose.yml
+        run: |
+          docker compose config -q
+          if [ $? -ne 0 ]; then
+            echo "docker-compose.yml is not valid"
+            exit 1
+          fi
+          
+          echo "Docker Compose configuration is valid"
 
       # Start services with docker compose using healthchecks
       - name: Start services with docker compose
