@@ -7,7 +7,6 @@ import {
 } from '@nestjs/terminus';
 import { PrismaService } from '../prisma/prisma.service';
 import { Public } from '../auth/decorators/public.decorator';
-import { PrometheusController } from './prometheus.controller';
 
 @ApiTags('health')
 @Controller('health')
