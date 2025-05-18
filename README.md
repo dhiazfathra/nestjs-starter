@@ -318,8 +318,8 @@ This project uses Docker Compose to manage multiple services (NestJS app, Postgr
 # Start all services (app, database, and Redis)
 $ docker compose up -d
 
-# Start all services (app, database, and Redis) for Apple Silicon (M1/M2/etc)
-$ DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose up -d
+# Start all services (app, database, and Redis) for Apple Silicon (M1/M2/M3)
+$ docker compose -f docker-compose.arm64.yaml up -d
 
 # View logs
 $ docker compose logs -f
@@ -366,6 +366,23 @@ REDIS_HOST=redis  # Use 'localhost' for local development
 JAEGER_HOST=jaeger  # Use 'localhost' for local development
 JAEGER_PORT=6831
 ```
+
+### Apple Silicon Support
+
+This project includes a dedicated Docker Compose file optimized for Apple Silicon (M1/M2/M3) ARM64 architecture:
+
+- **Optimized Images**: Uses ARM64-compatible images for all services
+- **Native Performance**: Runs natively on ARM64 architecture without emulation
+- **Platform Specification**: Explicitly sets the platform for each service
+
+To use the ARM64-optimized setup:
+
+```bash
+# Start all services optimized for Apple Silicon
+$ docker compose -f docker-compose.arm64.yaml up -d
+```
+
+This approach provides better performance than using the platform flag with the standard Docker Compose file.
 
 ### Building the Docker Image Separately
 
