@@ -17,10 +17,12 @@ import { TracingMiddleware } from './tracing/tracing.middleware';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    ThrottlerModule.forRoot([{
-      ttl: 60, // time to live in seconds
-      limit: 10, // the maximum number of requests within the TTL
-    }]),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60, // time to live in seconds
+        limit: 10, // the maximum number of requests within the TTL
+      },
+    ]),
     RedisCacheModule,
     PrismaModule,
     UsersModule,

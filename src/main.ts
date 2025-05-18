@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { apiReference } from '@scalar/nestjs-api-reference';
+import { ThrottlerStorage } from '@nestjs/throttler';
 import { AppModule } from './app.module';
 import { CustomScalars } from './common/scalars';
 import { AppThrottlerGuard } from './common/guards/throttler.guard';
@@ -34,9 +35,12 @@ async function bootstrap() {
 
   // Apply rate limiting globally
   const reflector = app.get(Reflector);
-  // The ThrottlerGuard from @nestjs/throttler requires a reflector instance
-  // Additional arguments may be required depending on your NestJS version
-  app.useGlobalGuards(new AppThrottlerGuard(reflector));
+  // Get the throttler options from the module
+  const throttlerOptions = app.get('THROTTLER_OPTIONS');
+  const throttlerStorage = app.get(ThrottlerStorage);
+  app.useGlobalGuards(
+    new AppThrottlerGuard(throttlerOptions, throttlerStorage, reflector),
+  );
 
   // Setup Swagger documentation
   const config = new DocumentBuilder()
