@@ -252,6 +252,7 @@ This project is configured with Codecov Test Analytics to provide insights into 
 - Detection of flaky tests that fail intermittently
 
 Test results are automatically uploaded to Codecov during CI runs via GitHub Actions. The workflow generates JUnit XML test reports and uploads them alongside coverage reports using the Codecov Test Results Action.
+
 ## Docker Setup
 
 This project includes Docker support for easy deployment and development.
