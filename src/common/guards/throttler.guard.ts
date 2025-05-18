@@ -1,28 +1,90 @@
-import { Injectable, ExecutionContext } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
 import {
-  ThrottlerGuard,
-  ThrottlerModuleOptions,
-  ThrottlerStorage,
-} from '@nestjs/throttler';
+  CanActivate,
+  ExecutionContext,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { ThrottlerModuleOptions, ThrottlerStorage } from '@nestjs/throttler';
 import { Request, Response } from 'express';
 
+interface ThrottlerOptions {
+  ttl: number;
+  limit: number;
+}
+
+/**
+ * Custom implementation of a rate limiting guard that provides:
+ * - IP-based tracking by default
+ * - Automatic exclusion of health check endpoints
+ * - Support for @SkipThrottle decorator
+ */
 @Injectable()
-export class AppThrottlerGuard extends ThrottlerGuard {
+export class AppThrottlerGuard implements CanActivate {
   constructor(
+    @Inject('ThrottlerModuleOptions')
     protected readonly options: ThrottlerModuleOptions,
     protected readonly storageService: ThrottlerStorage,
     protected readonly reflector: Reflector,
-  ) {
-    super(options, storageService, reflector);
+  ) {}
+
+  /**
+   * Determines whether the current request should be throttled.
+   */
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    // Check if we should skip throttling for this route
+    if (await this.shouldSkip(context)) {
+      return true;
+    }
+
+    // Get request and response
+    const { res } = this.getRequestResponse(context);
+
+    // Get throttling options
+    const options = this.options as ThrottlerOptions[];
+    const ttl = options[0]?.ttl || 60;
+    const limit = options[0]?.limit || 10;
+
+    // Generate a unique tracker key for this request
+    const key = this.generateKey(context, '');
+
+    // Try to increment the counter for this key
+    // The increment method requires 5 arguments: key, ttl, limit, blockDuration, and throttlerName
+    const currentCount = await this.storageService.increment(
+      key,
+      ttl,
+      limit,
+      0,
+      'default',
+    );
+    const current =
+      typeof currentCount === 'number' ? currentCount : currentCount.totalHits;
+
+    // Add headers to the response
+    res.header('X-RateLimit-Limit', limit.toString());
+    res.header(
+      'X-RateLimit-Remaining',
+      Math.max(0, limit - current).toString(),
+    );
+    res.header('X-RateLimit-Reset', ttl.toString());
+
+    // If current count exceeds limit, reject the request
+    if (current > limit) {
+      res.header('Retry-After', ttl.toString());
+      res.status(429).json({
+        statusCode: 429,
+        message: 'ThrottlerException: Too Many Requests',
+      });
+      return false;
+    }
+
+    return true;
   }
 
   /**
-   * Custom implementation of the ThrottlerGuard that can be extended
-   * to add custom behavior such as different rate limits for different routes,
-   * or to exclude certain routes from rate limiting.
+   * Extracts request and response objects from the execution context.
    */
-  protected override getRequestResponse(context: ExecutionContext): {
+  protected getRequestResponse(context: ExecutionContext): {
     req: Request;
     res: Response;
   } {
@@ -34,41 +96,32 @@ export class AppThrottlerGuard extends ThrottlerGuard {
   }
 
   /**
-   * Extracts the identifier for rate limiting from the request.
-   * By default, uses the client's IP address.
+   * Generates a unique key for rate limiting based on the request.
+   * Uses the client's IP address by default.
    */
-  protected override generateKey(
-    context: ExecutionContext,
-    suffix: string,
-  ): string {
+  protected generateKey(context: ExecutionContext, suffix: string): string {
     const { req } = this.getRequestResponse(context);
-    // Use IP address as the tracker by default
     return req.ip + suffix;
-
-    // Alternatively, you can use a combination of IP and route
-    // return `${req.ip}-${req.path}${suffix}`;
-
-    // Or for authenticated users, you can use the user ID
-    // if (req.user && req.user.id) {
-    //   return `${req.user.id}${suffix}`;
-    // }
-    // return req.ip + suffix;
   }
 
   /**
-   * Optional method to exclude specific routes from rate limiting.
-   * Override this method to implement custom exclusion logic.
+   * Determines whether rate limiting should be skipped for this request.
+   * Skips rate limiting for health check endpoints and routes with @SkipThrottle decorator.
    */
-  protected override async shouldSkip(
-    context: ExecutionContext,
-  ): Promise<boolean> {
-    // Example: Skip rate limiting for health check endpoints
+  protected async shouldSkip(context: ExecutionContext): Promise<boolean> {
+    // Skip rate limiting for health check endpoints
     const { req } = this.getRequestResponse(context);
+    // Check if the path contains '/health'
     if (req.path.includes('/health')) {
       return true;
     }
 
     // Check for @SkipThrottle() decorator
-    return super.shouldSkip(context);
+    const skipThrottle = this.reflector.getAllAndOverride<boolean>(
+      'skipThrottle',
+      [context.getHandler(), context.getClass()],
+    );
+
+    return skipThrottle === true;
   }
 }
