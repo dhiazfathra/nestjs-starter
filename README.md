@@ -638,6 +638,80 @@ export class HealthController {
 
 The rate limiting implementation can be customized by extending the `AppThrottlerGuard` class in `src/common/guards/throttler.guard.ts`. This allows you to implement custom tracking logic, such as using user IDs for authenticated users or combining IP addresses with route paths.
 
+## Pre-commit Hooks
+
+This project uses Git hooks to enforce code quality standards before commits and pushes. These hooks help maintain high code quality and ensure that all tests pass before code is committed to the repository.
+
+### Features
+
+- 🔍 **Lint Checking** - Automatically runs ESLint on changed files before commit
+- 🧪 **Test Verification** - Runs tests related to changed files
+- 📊 **Coverage Enforcement** - Verifies test coverage meets thresholds before pushing
+- 🔄 **Changed Files Only** - Optimized to only check files that have been modified
+- 📝 **Commit Message Linting** - Enforces conventional commit message format
+
+### Pre-commit Hook
+
+The pre-commit hook runs automatically when you attempt to commit changes. It performs:
+
+1. ESLint checks on changed files with automatic fixing when possible
+2. Tests related to changed files to ensure your changes don't break existing functionality
+
+### Pre-push Hook
+
+The pre-push hook runs before pushing to the remote repository and performs:
+
+1. Full test suite with coverage reporting
+2. Coverage threshold verification against the project requirements
+
+### Commit Message Hook
+
+The commit-msg hook enforces the use of conventional commit messages, which are required for semantic versioning and automated changelog generation. The hook validates that commit messages follow this format:
+
+```
+<type>(<optional scope>): <description>
+
+<optional body>
+
+<optional footer>
+```
+
+Where `type` is one of:
+
+- **feat**: A new feature
+- **fix**: A bug fix
+- **docs**: Documentation only changes
+- **style**: Changes that do not affect the meaning of the code (white-space, formatting, etc)
+- **refactor**: A code change that neither fixes a bug nor adds a feature
+- **perf**: A code change that improves performance
+- **test**: Adding missing tests or correcting existing tests
+- **build**: Changes that affect the build system or external dependencies
+- **ci**: Changes to CI configuration files and scripts
+- **chore**: Other changes that don't modify src or test files
+- **revert**: Reverts a previous commit
+
+Examples:
+
+```
+feat(auth): add JWT authentication
+fix(api): resolve user creation issue
+docs(readme): update installation instructions
+```
+
+### Configuration
+
+The pre-commit hooks are configured using:
+
+- **Husky** - For Git hooks integration
+- **lint-staged** - For running linters on staged files only
+- **commitlint** - For validating commit messages
+- **Custom scripts** - For coverage verification
+
+You can customize:
+- The lint-staged configuration in `.lintstagedrc.js`
+- The coverage thresholds in `package.json` under the `jest.coverageThreshold` section
+- The commit message rules in `commitlint.config.js`
+
 ## License
 
 This project is [MIT licensed](LICENSE).
