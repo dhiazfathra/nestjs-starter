@@ -5,7 +5,7 @@
  * It runs as part of the postinstall process.
  */
 
-const { execSync } = require('child_process');
+const { execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
@@ -18,19 +18,19 @@ try {
   if (fs.existsSync(huskyDir)) {
     // Make pre-commit hook executable
     if (fs.existsSync(path.join(huskyDir, 'pre-commit'))) {
-      execSync(`chmod +x ${path.join(huskyDir, 'pre-commit')}`);
+      execFileSync('chmod', ['+x', path.join(huskyDir, 'pre-commit')]);
       console.log('✅ Made pre-commit hook executable');
     }
     
     // Make commit-msg hook executable
     if (fs.existsSync(path.join(huskyDir, 'commit-msg'))) {
-      execSync(`chmod +x ${path.join(huskyDir, 'commit-msg')}`);
+      execFileSync('chmod', ['+x', path.join(huskyDir, 'commit-msg')]);
       console.log('✅ Made commit-msg hook executable');
     }
     
     // Make pre-push hook executable
     if (fs.existsSync(path.join(huskyDir, 'pre-push'))) {
-      execSync(`chmod +x ${path.join(huskyDir, 'pre-push')}`);
+      execFileSync('chmod', ['+x', path.join(huskyDir, 'pre-push')]);
       console.log('✅ Made pre-push hook executable');
     }
     
