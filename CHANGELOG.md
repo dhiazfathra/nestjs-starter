@@ -1,3 +1,11 @@
+# [1.6.0](https://github.com/dhiazfathra/nestjs-starter/compare/v1.5.0...v1.6.0) (2025-05-19)
+
+
+### Features
+
+* add arm64 specific docker compose configuration with monitoring services ([#22](https://github.com/dhiazfathra/nestjs-starter/issues/22)) ([50dd461](https://github.com/dhiazfathra/nestjs-starter/commit/50dd461ef1ef05dc7acb8f1634fba153992890f9))
+* implement rate limiting with ip based tracking & route exclusion support ([#23](https://github.com/dhiazfathra/nestjs-starter/issues/23)) ([26bcbae](https://github.com/dhiazfathra/nestjs-starter/commit/26bcbae252775f99ffb2929704feb39933ce8042))
+
 # [1.5.0](https://github.com/dhiazfathra/nestjs-starter/compare/v1.4.0...v1.5.0) (2025-05-18)
 
 

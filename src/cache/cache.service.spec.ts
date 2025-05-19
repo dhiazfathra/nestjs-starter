@@ -1,9 +1,9 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Cache } from 'cache-manager';
 import { CacheService } from './cache.service';
-import { ConfigService } from '@nestjs/config';
 
 describe('CacheService', () => {
   let service: CacheService;
