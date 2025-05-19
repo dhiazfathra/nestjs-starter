@@ -9,6 +9,7 @@ on:
       - '.dockerignore'
       - '.github/workflows/docker-validate.yml'
       - 'prisma/schema.prisma'
+      - 'monitoring/**'
   pull_request:
     branches: [ main, master ]
     paths:
@@ -17,6 +18,7 @@ on:
       - '.dockerignore'
       - '.github/workflows/docker-validate.yml'
       - 'prisma/schema.prisma'
+      - 'monitoring/**'
 
 # Limit concurrent runs of the same workflow
 concurrency:

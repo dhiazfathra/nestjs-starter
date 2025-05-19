@@ -6,7 +6,8 @@ on:
       - main
       - master
     paths:
-      - 'src/**'
+      - 'src/**/*.ts'
+      - 'src/**/*.js'
       - 'package.json'
       - 'package-lock.json'
       - '.releaserc.json'
