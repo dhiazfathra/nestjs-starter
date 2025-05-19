@@ -200,7 +200,7 @@ describe('CacheService', () => {
     it('should simulate failure based on probability', async () => {
       jest.spyOn(Math, 'random').mockReturnValue(0.1);
       await service.setChaosProbability(0.2);
-      
+
       const result = await service.get('test-key');
       expect(result).toBeUndefined();
       expect(cacheManager.get).not.toHaveBeenCalled();
@@ -209,7 +209,7 @@ describe('CacheService', () => {
     it('should execute factory directly when Redis is disabled', async () => {
       await service.toggleRedis(false);
       const factory = jest.fn().mockResolvedValue('value');
-      
+
       const result = await service.getOrSet('test-key', factory);
       expect(result).toBe('value');
       expect(factory).toHaveBeenCalled();
@@ -224,9 +224,9 @@ describe('CacheService', () => {
     it('should log warning and skip set operation when Redis is disabled', async () => {
       const loggerSpy = jest.spyOn(Logger.prototype, 'warn');
       await service.toggleRedis(false);
-      
+
       await service.set('test-key', 'test-value');
-      
+
       expect(cacheManager.set).not.toHaveBeenCalled();
       expect(loggerSpy).toHaveBeenCalledWith(
         '[Chaos] Cache disabled for set operation on key test-key',
@@ -236,9 +236,9 @@ describe('CacheService', () => {
     it('should log warning and skip delete operation when Redis is disabled', async () => {
       const loggerSpy = jest.spyOn(Logger.prototype, 'warn');
       await service.toggleRedis(false);
-      
+
       await service.del('test-key');
-      
+
       expect(cacheManager.del).not.toHaveBeenCalled();
       expect(loggerSpy).toHaveBeenCalledWith(
         '[Chaos] Cache disabled for delete operation on key test-key',
@@ -249,9 +249,9 @@ describe('CacheService', () => {
       const loggerSpy = jest.spyOn(Logger.prototype, 'warn');
       jest.spyOn(Math, 'random').mockReturnValue(0.1);
       await service.setChaosProbability(0.2);
-      
+
       await service.set('test-key', 'test-value');
-      
+
       expect(cacheManager.set).not.toHaveBeenCalled();
       expect(loggerSpy).toHaveBeenCalledWith(
         '[Chaos] Cache disabled for set operation on key test-key',
@@ -262,9 +262,9 @@ describe('CacheService', () => {
       const loggerSpy = jest.spyOn(Logger.prototype, 'warn');
       jest.spyOn(Math, 'random').mockReturnValue(0.1);
       await service.setChaosProbability(0.2);
-      
+
       await service.del('test-key');
-      
+
       expect(cacheManager.del).not.toHaveBeenCalled();
       expect(loggerSpy).toHaveBeenCalledWith(
         '[Chaos] Cache disabled for delete operation on key test-key',
