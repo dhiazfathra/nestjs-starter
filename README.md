@@ -30,6 +30,7 @@ A NestJS TypeScript starter project with user authentication, following best pra
 - 🔑 **Role-Based Access Control** - User and Admin roles with proper guards
 - 🗃️ **Database Integration** - PostgreSQL with Prisma ORM
 - 🚀 **Redis Caching** - Performance optimization with Redis-based caching
+- 🧪 **Chaos Testing** - Resilience testing with Redis fault injection
 - 🛡️ **Rate Limiting** - Protection against abuse and DoS attacks
 - 📊 **Bundle Analysis** - Monitor and optimize bundle size with Codecov integration
 - ✅ **Validation** - Request validation using class-validator
@@ -207,6 +208,62 @@ const value = await cacheService.getOrSet(
   ttl
 );
 ```
+
+## Chaos Testing
+
+This project includes chaos testing capabilities to ensure the application remains resilient when Redis experiences failures. The chaos testing system allows you to simulate Redis failures in a controlled manner.
+
+### Features
+
+- **Redis Fault Injection** - Simulate Redis failures with configurable probability
+- **Redis Toggle** - Enable/disable Redis cache entirely for testing
+- **API Control** - Manage chaos testing through a secure API
+- **GitHub Actions Integration** - Automated chaos testing in CI/CD pipeline
+
+### API Endpoints
+
+The chaos testing API is protected and requires admin authentication:
+
+```
+# Toggle Redis on/off
+POST /chaos/toggle-redis
+{ "enabled": true|false }
+
+# Set Redis failure probability (0-1)
+POST /chaos/set-probability
+{ "probability": 0.3 }
+
+# Get current chaos testing status
+GET /chaos/status
+```
+
+### GitHub Actions Workflow
+
+The project includes a GitHub Actions workflow for automated chaos testing:
+
+- **Trigger Events**: Runs on pushes to main/master, pull requests, or manual triggers
+- **Configurable**: Adjustable Redis failure probability
+- **Comprehensive**: Tests application resilience under Redis failures
+- **Verification**: Ensures no fatal errors occur during chaos conditions
+
+To manually trigger chaos testing:
+
+1. Go to the Actions tab in your GitHub repository
+2. Select the "Chaos Testing" workflow
+3. Click "Run workflow"
+4. Set your desired Redis failure probability
+5. Click "Run workflow"
+
+### Implementation
+
+Chaos testing is implemented in the `CacheService` with the following mechanisms:
+
+- Probability-based failure simulation
+- Graceful fallbacks for all cache operations
+- Comprehensive logging of simulated failures
+- Automatic factory execution when cache is disabled
+
+This approach ensures your application can handle Redis failures without affecting user experience.
 
 ## Distributed Tracing with Jaeger
 
