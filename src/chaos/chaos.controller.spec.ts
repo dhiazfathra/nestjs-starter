@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ChaosController } from './chaos.controller';
-import { CacheService } from '../cache/cache.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { CacheService } from '../cache/cache.service';
+import { ChaosController } from './chaos.controller';
 
 describe('ChaosController', () => {
   let controller: ChaosController;
@@ -35,12 +35,20 @@ describe('ChaosController', () => {
   });
 
   describe('toggleRedis', () => {
-    it('should toggle Redis status', async () => {
+    it('should toggle Redis status to disabled', async () => {
       const dto = { enabled: false };
       const result = await controller.toggleRedis(dto);
 
       expect(result).toEqual({ message: 'Redis cache disabled' });
       expect(cacheService.toggleRedis).toHaveBeenCalledWith(false);
+    });
+
+    it('should toggle Redis status to enabled', async () => {
+      const dto = { enabled: true };
+      const result = await controller.toggleRedis(dto);
+
+      expect(result).toEqual({ message: 'Redis cache enabled' });
+      expect(cacheService.toggleRedis).toHaveBeenCalledWith(true);
     });
   });
 

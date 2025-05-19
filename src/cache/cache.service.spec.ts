@@ -191,10 +191,14 @@ describe('CacheService', () => {
 
   describe('Chaos Testing', () => {
     it('should bypass cache when Redis is disabled', async () => {
+      const loggerSpy = jest.spyOn(Logger.prototype, 'log');
       await service.toggleRedis(false);
+
       const result = await service.get('test-key');
+
       expect(result).toBeUndefined();
       expect(cacheManager.get).not.toHaveBeenCalled();
+      expect(loggerSpy).toHaveBeenCalledWith('Redis cache disabled');
     });
 
     it('should simulate failure based on probability', async () => {
@@ -269,6 +273,14 @@ describe('CacheService', () => {
       expect(loggerSpy).toHaveBeenCalledWith(
         '[Chaos] Cache disabled for delete operation on key test-key',
       );
+    });
+
+    it('should enable Redis cache and log the status', async () => {
+      const loggerSpy = jest.spyOn(Logger.prototype, 'log');
+      await service.toggleRedis(true);
+
+      expect(service['isRedisEnabled']).toBe(true);
+      expect(loggerSpy).toHaveBeenCalledWith('Redis cache enabled');
     });
   });
 });
