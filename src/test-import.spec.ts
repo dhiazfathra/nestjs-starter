@@ -1,6 +1,6 @@
-import { AppThrottlerGuard } from './common/guards/throttler.guard';
+import { RateLimitGuard } from './common/guards/throttler.guard';
 describe('Import Test', () => {
   it('should import', () => {
-    expect(AppThrottlerGuard).toBeDefined();
+    expect(RateLimitGuard).toBeDefined();
   });
 });
