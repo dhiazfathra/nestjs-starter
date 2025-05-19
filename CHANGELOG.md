@@ -1,3 +1,11 @@
+# [1.9.0](https://github.com/dhiazfathra/nestjs-starter/compare/v1.8.0...v1.9.0) (2025-05-19)
+
+
+### Features
+
+* add git hooks for code quality & coverage enforcement ([#31](https://github.com/dhiazfathra/nestjs-starter/issues/31)) ([c754c30](https://github.com/dhiazfathra/nestjs-starter/commit/c754c30d72c2c71beb8299416a0dd48b96e1f32e))
+* improve husky git hooks handling in CI/CD pipeline & local setup ([#32](https://github.com/dhiazfathra/nestjs-starter/issues/32)) ([5ec16c9](https://github.com/dhiazfathra/nestjs-starter/commit/5ec16c92d6072ca0c02061c13f87bfda6d38afbc))
+
 # [1.8.0](https://github.com/dhiazfathra/nestjs-starter/compare/v1.7.0...v1.8.0) (2025-05-19)
 
 
