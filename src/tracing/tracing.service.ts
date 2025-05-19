@@ -34,8 +34,8 @@ export class TracingService implements OnModuleInit, OnApplicationShutdown {
       // Handle potential string value from environment
       if (typeof configPort === 'string') {
         // Remove any protocol or host information if present
-        const portStr = configPort.includes(':') 
-          ? configPort.split(':').pop() 
+        const portStr = configPort.includes(':')
+          ? configPort.split(':').pop()
           : configPort;
         jaegerPort = parseInt(portStr, 10);
       } else {
