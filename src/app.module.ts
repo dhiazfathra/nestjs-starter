@@ -11,6 +11,7 @@ import { HealthModule } from './health/health.module';
 import { MetricsMiddleware } from './health/metrics.middleware';
 import { TracingModule } from './tracing/tracing.module';
 import { TracingMiddleware } from './tracing/tracing.middleware';
+import { ChaosModule } from './chaos/chaos.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { TracingMiddleware } from './tracing/tracing.middleware';
     AuthModule,
     HealthModule,
     TracingModule,
+    ChaosModule,
   ],
   controllers: [AppController],
   providers: [AppService],
