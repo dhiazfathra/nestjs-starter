@@ -1,34 +1,35 @@
-FROM node:22-alpine AS builder
+FROM node:22-alpine@sha256:152270cd4bd094d216a84cbc3c5eb1791afb05af00b811e2f0f04bdc6c473602 AS builder
 
 WORKDIR /app
 
-# Copy package files and install dependencies
+# Copy package files first
 COPY package*.json ./
-RUN npm ci
+
+# Copy scripts directory for postinstall script
+COPY scripts ./scripts/
+
+# Install dependencies
+RUN npm ci --ignore-scripts && \
+    npm run prisma:generate && \
+    npm run build
 
 # Copy application source code
 COPY . .
-
-# Generate Prisma client
-RUN npm run prisma:generate
-
-# Build the application
-RUN npm run build
 
 # Remove development dependencies
 RUN npm prune --production
 
 # ---
-FROM node:22-alpine AS production
+FROM node:22-alpine@sha256:152270cd4bd094d216a84cbc3c5eb1791afb05af00b811e2f0f04bdc6c473602 AS production
 
 WORKDIR /app
 
 # Set NODE_ENV to production
 ENV NODE_ENV=production
 
-# Install utilities for health checks
-RUN apk update && apk add netcat-openbsd
-RUN apk add --no-cache wget curl
+# Install utilities for health checks (consolidated RUN commands and added --no-cache)
+RUN apk update --no-cache && \
+    apk add --no-cache netcat-openbsd=1.130-r5 wget=1.21.4-r0 curl=8.5.0-r0
 
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist

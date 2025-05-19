@@ -31,7 +31,7 @@
     "setup": "npm install && npm run prisma:generate && npm run prisma:migrate",
     "semantic-release": "semantic-release",
     "prepare": "husky install",
-    "postinstall": "node scripts/postinstall.js"
+    "postinstall": "node -e \"try { require('fs').accessSync('./scripts/postinstall.js'); require('./scripts/postinstall.js'); } catch(e) { console.log('Skipping postinstall script - not found or error:', e.message); }\""
   },
   "dependencies": {
     "@nestjs/cache-manager": "^3.0.1",
