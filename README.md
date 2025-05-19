@@ -17,7 +17,39 @@
   <a href="https://github.com/dhiazfathra/nestjs-starter/actions/workflows/semantic-release.yml">
     <img src="https://github.com/dhiazfathra/nestjs-starter/actions/workflows/semantic-release.yml/badge.svg" alt="Semantic Release" />
   </a>
+  <a href="https://github.com/dhiazfathra/nestjs-starter/actions/workflows/chaos-test.yml">
+    <img src="https://github.com/dhiazfathra/nestjs-starter/actions/workflows/chaos-test.yml/badge.svg" alt="Chaos Testing" />
+  </a>
+  <a href="https://github.com/dhiazfathra/nestjs-starter/actions/workflows/docker-validate.yml">
+    <img src="https://github.com/dhiazfathra/nestjs-starter/actions/workflows/docker-validate.yml/badge.svg" alt="Docker Validation" />
+  </a>
+  <a href="https://github.com/dhiazfathra/nestjs-starter/actions/workflows/security.yml">
+    <img src="https://github.com/dhiazfathra/nestjs-starter/actions/workflows/security.yml/badge.svg" alt="Security Scan" />
+  </a>
 </p>
+
+## Table of Contents
+
+- [Description](#description)
+- [Features](#features)
+- [Technologies Used](#technologies-used)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Running the app](#running-the-app)
+- [API Documentation](#api-documentation)
+  - [Standard Swagger UI](#standard-swagger-ui)
+  - [Scalar API Reference](#scalar-api-reference)
+  - [Scalar Types](#scalar-types)
+  - [API Endpoints](#api-endpoints)
+- [Bundle Analysis](#bundle-analysis)
+- [Redis Caching](#redis-caching)
+- [Monitoring](#monitoring)
+- [Project Structure](#project-structure)
+- [Testing](#testing)
+- [CI/CD](#ci-cd)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Description
 
@@ -38,6 +70,34 @@ A NestJS TypeScript starter project with user authentication, following best pra
 - 📚 **API Documentation** - Swagger/OpenAPI and Scalar API Reference
 - 📊 **Monitoring** - Grafana and Prometheus for metrics and monitoring
 - 🔍 **Distributed Tracing** - Jaeger for request tracing and performance analysis
+
+## Technologies Used
+
+- **NestJS** - Progressive Node.js framework for building server-side applications
+- **TypeScript** - Typed superset of JavaScript
+- **Prisma** - Next-generation ORM for Node.js and TypeScript
+- **PostgreSQL** - Open-source relational database
+- **Redis** - In-memory data structure store for caching
+- **JWT** - JSON Web Tokens for authentication
+- **Passport** - Authentication middleware for Node.js
+- **class-validator** - Decorator-based validation for classes
+- **class-transformer** - Transform plain objects to class instances
+- **Swagger/OpenAPI** - API documentation
+- **Scalar** - Modern API reference
+- **Jest** - JavaScript testing framework
+- **Supertest** - HTTP assertion library
+- **Prometheus** - Monitoring and alerting toolkit
+- **Grafana** - Observability and data visualization platform
+- **Jaeger** - Distributed tracing system
+- **Docker** - Containerization platform
+- **Docker Compose** - Multi-container Docker applications
+- **GitHub Actions** - CI/CD automation
+- **Semantic Release** - Automated versioning and package publishing
+- **Codecov** - Code coverage reporting
+- **ESLint** - JavaScript linting utility
+- **Prettier** - Code formatter
+- **Husky** - Git hooks
+- **Commitlint** - Lint commit messages
 
 ## Prerequisites
 
@@ -376,7 +436,7 @@ This project uses Docker Compose to manage multiple services (NestJS app, Postgr
 # Start all services (app, database, and Redis)
 $ docker compose up -d
 
-# Start all services (app, database, and Redis) for Apple Silicon (M1/M2/M3)
+# Start all services (app, database, and Redis) for Apple Silicon
 $ docker compose -f docker-compose.arm64.yaml up -d
 
 # View logs
@@ -427,7 +487,7 @@ JAEGER_PORT=6831
 
 ### Apple Silicon Support
 
-This project includes a dedicated Docker Compose file optimized for Apple Silicon (M1/M2/M3) ARM64 architecture:
+This project includes a dedicated Docker Compose file optimized for Apple Silicon ARM64 architecture:
 
 - **Optimized Images**: Uses ARM64-compatible images for all services
 - **Native Performance**: Runs natively on ARM64 architecture without emulation
@@ -486,7 +546,7 @@ $ act push
 
 ### Troubleshooting Act
 
-- If you're using Apple Silicon (M1/M2/M3), add `--container-architecture linux/amd64` to avoid platform compatibility issues
+- If you're using Apple Silicon, add `--container-architecture linux/amd64` to avoid platform compatibility issues
 - Use `-v` flag for verbose output to debug issues
 - Check container logs with `docker logs` if a job fails
 
