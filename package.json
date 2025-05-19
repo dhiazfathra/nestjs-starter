@@ -23,6 +23,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "test:changed": "jest --findRelatedTests",
     "verify:coverage": "node scripts/verify-coverage.js",
+    "commitlint": "commitlint --edit",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
@@ -70,6 +71,8 @@
   },
   "devDependencies": {
     "@codecov/webpack-plugin": "^1.9.0",
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
     "@eslint/js": "^9.27.0",
     "@nestjs/cli": "^11.0.7",
     "@nestjs/schematics": "^11.0.5",
@@ -125,7 +128,11 @@
       "!**/auth/guards/local-auth.guard.ts"
     ],
     "coverageDirectory": "../coverage",
-    "coverageReporters": ["text", "lcov", "json-summary"],
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "json-summary"
+    ],
     "testEnvironment": "node",
     "coverageThreshold": {
       "global": {
