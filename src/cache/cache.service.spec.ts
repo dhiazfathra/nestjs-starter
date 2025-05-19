@@ -1,5 +1,6 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Cache } from 'cache-manager';
 import { CacheService } from './cache.service';
@@ -7,6 +8,7 @@ import { CacheService } from './cache.service';
 describe('CacheService', () => {
   let service: CacheService;
   let cacheManager: Cache;
+  let _configService: ConfigService;
 
   const mockCacheManager = {
     get: jest.fn(),
@@ -22,14 +24,28 @@ describe('CacheService', () => {
           provide: CACHE_MANAGER,
           useValue: mockCacheManager,
         },
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn().mockImplementation((key, defaultValue) => {
+              if (key === 'CHAOS_REDIS_PROBABILITY') {
+                return 0.2; // Return test value for chaos probability
+              }
+              return defaultValue;
+            }),
+          },
+        },
       ],
     }).compile();
 
     service = module.get<CacheService>(CacheService);
     cacheManager = module.get(CACHE_MANAGER);
+    _configService = module.get(ConfigService);
 
     // Mock the logger to avoid console output during tests
     jest.spyOn(Logger.prototype, 'error').mockImplementation(() => {});
+    jest.spyOn(Logger.prototype, 'warn').mockImplementation(() => {});
+    jest.clearAllMocks();
   });
 
   afterEach(() => {
@@ -170,6 +186,101 @@ describe('CacheService', () => {
       expect(cacheManager.get).toHaveBeenCalledWith(key);
       expect(factory).toHaveBeenCalled();
       expect(cacheManager.set).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Chaos Testing', () => {
+    it('should bypass cache when Redis is disabled', async () => {
+      const loggerSpy = jest.spyOn(Logger.prototype, 'log');
+      await service.toggleRedis(false);
+
+      const result = await service.get('test-key');
+
+      expect(result).toBeUndefined();
+      expect(cacheManager.get).not.toHaveBeenCalled();
+      expect(loggerSpy).toHaveBeenCalledWith('Redis cache disabled');
+    });
+
+    it('should simulate failure based on probability', async () => {
+      jest.spyOn(Math, 'random').mockReturnValue(0.1);
+      await service.setChaosProbability(0.2);
+
+      const result = await service.get('test-key');
+      expect(result).toBeUndefined();
+      expect(cacheManager.get).not.toHaveBeenCalled();
+    });
+
+    it('should execute factory directly when Redis is disabled', async () => {
+      await service.toggleRedis(false);
+      const factory = jest.fn().mockResolvedValue('value');
+
+      const result = await service.getOrSet('test-key', factory);
+      expect(result).toBe('value');
+      expect(factory).toHaveBeenCalled();
+      expect(cacheManager.get).not.toHaveBeenCalled();
+    });
+
+    it('should initialize chaos probability from config on module init', async () => {
+      await service.onModuleInit();
+      expect(service['chaosProbability']).toBe(0.2);
+    });
+
+    it('should log warning and skip set operation when Redis is disabled', async () => {
+      const loggerSpy = jest.spyOn(Logger.prototype, 'warn');
+      await service.toggleRedis(false);
+
+      await service.set('test-key', 'test-value');
+
+      expect(cacheManager.set).not.toHaveBeenCalled();
+      expect(loggerSpy).toHaveBeenCalledWith(
+        '[Chaos] Cache disabled for set operation on key test-key',
+      );
+    });
+
+    it('should log warning and skip delete operation when Redis is disabled', async () => {
+      const loggerSpy = jest.spyOn(Logger.prototype, 'warn');
+      await service.toggleRedis(false);
+
+      await service.del('test-key');
+
+      expect(cacheManager.del).not.toHaveBeenCalled();
+      expect(loggerSpy).toHaveBeenCalledWith(
+        '[Chaos] Cache disabled for delete operation on key test-key',
+      );
+    });
+
+    it('should log warning and skip set operation when chaos is triggered', async () => {
+      const loggerSpy = jest.spyOn(Logger.prototype, 'warn');
+      jest.spyOn(Math, 'random').mockReturnValue(0.1);
+      await service.setChaosProbability(0.2);
+
+      await service.set('test-key', 'test-value');
+
+      expect(cacheManager.set).not.toHaveBeenCalled();
+      expect(loggerSpy).toHaveBeenCalledWith(
+        '[Chaos] Cache disabled for set operation on key test-key',
+      );
+    });
+
+    it('should log warning and skip delete operation when chaos is triggered', async () => {
+      const loggerSpy = jest.spyOn(Logger.prototype, 'warn');
+      jest.spyOn(Math, 'random').mockReturnValue(0.1);
+      await service.setChaosProbability(0.2);
+
+      await service.del('test-key');
+
+      expect(cacheManager.del).not.toHaveBeenCalled();
+      expect(loggerSpy).toHaveBeenCalledWith(
+        '[Chaos] Cache disabled for delete operation on key test-key',
+      );
+    });
+
+    it('should enable Redis cache and log the status', async () => {
+      const loggerSpy = jest.spyOn(Logger.prototype, 'log');
+      await service.toggleRedis(true);
+
+      expect(service['isRedisEnabled']).toBe(true);
+      expect(loggerSpy).toHaveBeenCalledWith('Redis cache enabled');
     });
   });
 });

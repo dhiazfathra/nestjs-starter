@@ -1,19 +1,38 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Cache } from 'cache-manager';
 
 @Injectable()
-export class CacheService {
+export class CacheService implements OnModuleInit {
   private readonly logger = new Logger(CacheService.name);
+  private isRedisEnabled = true;
+  private chaosProbability = 0;
 
-  constructor(@Inject(CACHE_MANAGER) private readonly cacheManager: Cache) {}
+  constructor(
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
+    private readonly configService: ConfigService,
+  ) {}
 
-  /**
-   * Get a value from cache
-   * @param key - Cache key
-   * @returns The cached value or undefined if not found
-   */
+  async onModuleInit(): Promise<void> {
+    this.chaosProbability = this.configService.get<number>(
+      'CHAOS_REDIS_PROBABILITY',
+      0,
+    );
+  }
+
+  private shouldSimulateFailure(): boolean {
+    return this.chaosProbability > 0 && Math.random() < this.chaosProbability;
+  }
+
   async get<T>(key: string): Promise<T | undefined> {
+    if (!this.isRedisEnabled || this.shouldSimulateFailure()) {
+      this.logger.warn(
+        `[Chaos] Cache disabled for get operation on key ${key}`,
+      );
+      return undefined;
+    }
+
     try {
       return await this.cacheManager.get<T>(key);
     } catch (error) {
@@ -22,26 +41,29 @@ export class CacheService {
     }
   }
 
-  /**
-   * Set a value in cache
-   * @param key - Cache key
-   * @param value - Value to cache
-   * @param ttl - Time to live in seconds (optional)
-   */
   async set<T>(key: string, value: T, ttl?: number): Promise<void> {
+    if (!this.isRedisEnabled || this.shouldSimulateFailure()) {
+      this.logger.warn(
+        `[Chaos] Cache disabled for set operation on key ${key}`,
+      );
+      return;
+    }
+
     try {
-      // Pass ttl directly as the third parameter
       await this.cacheManager.set(key, value, ttl);
     } catch (error) {
       this.logger.error(`Failed to set cache key ${key}:`, error);
     }
   }
 
-  /**
-   * Delete a value from cache
-   * @param key - Cache key
-   */
   async del(key: string): Promise<void> {
+    if (!this.isRedisEnabled || this.shouldSimulateFailure()) {
+      this.logger.warn(
+        `[Chaos] Cache disabled for delete operation on key ${key}`,
+      );
+      return;
+    }
+
     try {
       await this.cacheManager.del(key);
     } catch (error) {
@@ -49,18 +71,18 @@ export class CacheService {
     }
   }
 
-  /**
-   * Get a value from cache or set it if not found
-   * @param key - Cache key
-   * @param factory - Function to generate value if not in cache
-   * @param ttl - Time to live in seconds (optional)
-   * @returns The cached or newly generated value
-   */
   async getOrSet<T>(
     key: string,
     factory: () => Promise<T>,
     ttl?: number,
   ): Promise<T> {
+    if (!this.isRedisEnabled || this.shouldSimulateFailure()) {
+      this.logger.warn(
+        `[Chaos] Cache disabled, directly executing factory for key ${key}`,
+      );
+      return factory();
+    }
+
     const cachedValue = await this.get<T>(key);
 
     if (cachedValue !== undefined) {
@@ -78,5 +100,15 @@ export class CacheService {
       );
       throw error;
     }
+  }
+
+  async toggleRedis(enabled: boolean): Promise<void> {
+    this.isRedisEnabled = enabled;
+    this.logger.log(`Redis cache ${enabled ? 'enabled' : 'disabled'}`);
+  }
+
+  async setChaosProbability(probability: number): Promise<void> {
+    this.chaosProbability = probability;
+    this.logger.log(`Set Redis chaos probability to ${probability}`);
   }
 }

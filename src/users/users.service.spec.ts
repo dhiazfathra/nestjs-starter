@@ -1,7 +1,7 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Role } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
-import { Role } from '../common/enums/role.enum';
 import { CacheService } from '../cache/cache.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from './users.service';

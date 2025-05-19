@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Role } from '../../common/enums/role.enum';
+import { Role } from '@prisma/client';
 
 /**
  * User entity representing a user in the system
