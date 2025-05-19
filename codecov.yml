@@ -21,10 +21,10 @@ coverage:
         # advanced
         if_no_uploads: error
 
-  # Enable carryforward of coverage for files not included in the current report
-  flag_management:
-    default_rules:
-      carryforward: true
+# Enable carryforward of coverage for files not included in the current report
+flag_management:
+  default_rules:
+    carryforward: true
 
 comment:
   layout: 'reach,diff,flags,files,footer'
