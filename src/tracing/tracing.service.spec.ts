@@ -106,6 +106,60 @@ describe('TracingService', () => {
         port: 6831,
       });
     });
+
+    it('should parse port correctly when provided as a string', () => {
+      jest
+        .spyOn(configService, 'get')
+        .mockImplementation((key, defaultValue) => {
+          if (key === 'JAEGER_PORT') {
+            return '8432';
+          }
+          return defaultValue;
+        });
+
+      new TracingService(configService);
+
+      expect(JaegerExporter).toHaveBeenCalledWith({
+        host: 'localhost',
+        port: 8432,
+      });
+    });
+
+    it('should handle port string with protocol or host information', () => {
+      jest
+        .spyOn(configService, 'get')
+        .mockImplementation((key, defaultValue) => {
+          if (key === 'JAEGER_PORT') {
+            return 'localhost:9432';
+          }
+          return defaultValue;
+        });
+
+      new TracingService(configService);
+
+      expect(JaegerExporter).toHaveBeenCalledWith({
+        host: 'localhost',
+        port: 9432,
+      });
+    });
+
+    it('should use port directly when provided as a number', () => {
+      jest
+        .spyOn(configService, 'get')
+        .mockImplementation((key, defaultValue) => {
+          if (key === 'JAEGER_PORT') {
+            return 7432; // Numeric port
+          }
+          return defaultValue;
+        });
+
+      new TracingService(configService);
+
+      expect(JaegerExporter).toHaveBeenCalledWith({
+        host: 'localhost',
+        port: 7432,
+      });
+    });
   });
 
   describe('onModuleInit', () => {
