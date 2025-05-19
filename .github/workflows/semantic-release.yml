@@ -84,7 +84,13 @@ jobs:
             node_modules/.cache/semantic-release
           key: ${{ runner.os }}-semantic-release-${{ hashFiles('.releaserc.json') }}
 
+      - name: Disable husky hooks for CI
+        run: |
+          chmod +x .github/workflows/disable-husky-for-ci.sh
+          .github/workflows/disable-husky-for-ci.sh
+
       - name: Semantic Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
+          HUSKY: 0
+        run: npx semantic-release --no-ci
