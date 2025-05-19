@@ -30,7 +30,8 @@
     "db:seed": "ts-node prisma/seed.ts",
     "setup": "npm install && npm run prisma:generate && npm run prisma:migrate",
     "semantic-release": "semantic-release",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "postinstall": "node scripts/postinstall.js"
   },
   "dependencies": {
     "@nestjs/cache-manager": "^3.0.1",
