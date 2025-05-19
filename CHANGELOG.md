@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/dhiazfathra/nestjs-starter/compare/v1.7.0...v1.8.0) (2025-05-19)
+
+
+### Features
+
+* configure k8s with monitoring & tracing ([#30](https://github.com/dhiazfathra/nestjs-starter/issues/30)) ([3511c19](https://github.com/dhiazfathra/nestjs-starter/commit/3511c19cd06f2d8052cd07c9d61075f6a9829b9f))
+
 # [1.7.0](https://github.com/dhiazfathra/nestjs-starter/compare/v1.6.0...v1.7.0) (2025-05-19)
 
 
