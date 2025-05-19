@@ -4,13 +4,13 @@ metadata:
   name: app-config
   namespace: nestjs-starter
 data:
-  NODE_ENV: production
-  PORT: "3000"
-  DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/nestjs?schema=public"
-  REDIS_HOST: "redis"
-  REDIS_PORT: "6379"
-  JAEGER_HOST: "jaeger"
-  JAEGER_PORT: "6831"
+  NODE_ENV: 'production'
+  PORT: '3000'
+  DATABASE_URL: 'postgresql://postgres:postgres@postgres:5432/nestjs?schema=public'
+  REDIS_HOST: 'redis'
+  REDIS_PORT: '6379'
+  JAEGER_HOST: 'jaeger'
+  JAEGER_PORT: '6831'
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -27,6 +27,8 @@ spec:
       labels:
         app: nestjs-app
     spec:
+      # Add termination grace period to handle SIGTERM gracefully
+      terminationGracePeriodSeconds: 60
       containers:
         - name: nestjs-app
           image: nestjs-starter-app:latest
@@ -36,25 +38,41 @@ spec:
           envFrom:
             - configMapRef:
                 name: app-config
-          readinessProbe:
+          # Add a startup probe to give the application more time to initialize
+          startupProbe:
             httpGet:
               path: /api
               port: 3000
-            initialDelaySeconds: 10
-            periodSeconds: 5
-          livenessProbe:
+            failureThreshold: 30
+            periodSeconds: 10
+          # Adjust readiness probe to be more lenient
+          readinessProbe:
             httpGet:
               path: /api
               port: 3000
             initialDelaySeconds: 20
             periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          # Adjust liveness probe to be more lenient
+          livenessProbe:
+            httpGet:
+              path: /api
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          # Increase resource limits
           resources:
             requests:
-              memory: "128Mi"
-              cpu: "100m"
+              memory: '256Mi'
+              cpu: '200m'
             limits:
-              memory: "256Mi"
-              cpu: "200m"
+              memory: '512Mi'
+              cpu: '400m'
 ---
 apiVersion: v1
 kind: Service
@@ -67,7 +85,8 @@ spec:
   ports:
     - port: 3000
       targetPort: 3000
-  type: ClusterIP
+      nodePort: 30000
+  type: NodePort
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress

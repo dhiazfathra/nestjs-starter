@@ -39,8 +39,12 @@ COPY --from=builder /app/prisma ./prisma
 # Expose the application port
 EXPOSE 3000
 
-# Start the application
-CMD ["npm", "run", "start:prod"]
+# Add a script to handle graceful shutdown
+COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+RUN chmod +x /app/docker-entrypoint.sh
+
+# Use the entrypoint script to start the application
+CMD ["/app/docker-entrypoint.sh"]
 
 HEALTHCHECK --interval=30s --timeout=3s \
   CMD wget -qO- http://localhost:${PORT:-3000}/api || exit 1
