@@ -29,7 +29,7 @@ ENV NODE_ENV=production
 
 # Install utilities for health checks (consolidated RUN commands and added --no-cache)
 RUN apk update --no-cache && \
-    apk add --no-cache netcat-openbsd=1.130-r5 wget=1.21.4-r0 curl=8.5.0-r0
+    apk add --no-cache netcat-openbsd wget curl
 
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist
