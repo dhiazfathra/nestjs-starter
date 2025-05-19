@@ -25,7 +25,27 @@ export class TracingService implements OnModuleInit, OnApplicationShutdown {
       'JAEGER_HOST',
       'localhost',
     );
-    const jaegerPort = this.configService.get<number>('JAEGER_PORT', 6831);
+
+    // Ensure port is properly parsed as a number
+    let jaegerPort: number = 6831; // Default port
+    const configPort = this.configService.get<string | number>('JAEGER_PORT');
+
+    if (configPort) {
+      // Handle potential string value from environment
+      if (typeof configPort === 'string') {
+        // Remove any protocol or host information if present
+        const portStr = configPort.includes(':')
+          ? configPort.split(':').pop()
+          : configPort;
+        jaegerPort = parseInt(portStr, 10);
+      } else {
+        jaegerPort = configPort;
+      }
+    }
+
+    this.logger.log(
+      `Configuring Jaeger exporter with host: ${jaegerHost} and port: ${jaegerPort}`,
+    );
 
     const exporter = new JaegerExporter({
       host: jaegerHost,
