@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/dhiazfathra/nestjs-starter/compare/v1.6.0...v1.7.0) (2025-05-19)
+
+
+### Features
+
+* add chaos testing module for Redis cache with failure simulation ([#24](https://github.com/dhiazfathra/nestjs-starter/issues/24)) ([cd07c9f](https://github.com/dhiazfathra/nestjs-starter/commit/cd07c9f5912ab900cf047aeac72e1f9139a720b9))
+
 # [1.6.0](https://github.com/dhiazfathra/nestjs-starter/compare/v1.5.0...v1.6.0) (2025-05-19)
 
 
