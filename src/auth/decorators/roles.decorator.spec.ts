@@ -1,5 +1,5 @@
 import { SetMetadata } from '@nestjs/common';
-import { Role } from '../../common/enums/role.enum';
+import { Role } from '@prisma/client';
 import { Roles } from './roles.decorator';
 
 jest.mock('@nestjs/common', () => ({

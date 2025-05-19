@@ -1,10 +1,10 @@
-import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { CacheService } from '../cache/cache.service';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Role } from '@prisma/client';
+import { Roles } from '../auth/decorators/roles.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { Role } from '../common/enums/role.enum';
+import { CacheService } from '../cache/cache.service';
 
 export class ToggleRedisDto {
   enabled: boolean;
