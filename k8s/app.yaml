@@ -9,6 +9,8 @@ data:
   DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/nestjs?schema=public"
   REDIS_HOST: "redis"
   REDIS_PORT: "6379"
+  JAEGER_HOST: "jaeger"
+  JAEGER_PORT: "6831"
 ---
 apiVersion: apps/v1
 kind: Deployment
