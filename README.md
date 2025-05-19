@@ -520,6 +520,70 @@ The application exposes custom metrics through the `/metrics` endpoint, which Pr
 
 To add custom Grafana dashboards:
 
+## Kubernetes Deployment
+
+This project includes Kubernetes configuration for local deployment using OrbStack on MacBook M1.
+
+### Prerequisites
+
+- OrbStack installed on your MacBook M1
+- Kubernetes enabled in OrbStack
+- Docker installed and running
+
+### Deployment Files
+
+The Kubernetes configuration files are located in the `k8s` directory:
+
+- `namespace.yaml` - Creates a dedicated namespace for the application
+- `postgres.yaml` - PostgreSQL database deployment
+- `redis.yaml` - Redis cache deployment
+- `app.yaml` - NestJS application deployment
+- `monitoring.yaml` - Prometheus and Grafana monitoring stack
+- `jaeger.yaml` - Jaeger distributed tracing
+- `deploy.sh` - Deployment script to automate the deployment process
+- `update.sh` - Script to update an existing deployment
+
+### Deployment Instructions
+
+1. Make sure OrbStack is running with Kubernetes enabled
+2. Run the deployment script:
+
+```bash
+./k8s/deploy.sh
+```
+
+This script will:
+- Build the Docker image for your NestJS application
+- Create the Kubernetes namespace
+- Deploy all components (PostgreSQL, Redis, Prometheus, Grafana, Jaeger, and the NestJS app)
+- Set up local hostnames in your /etc/hosts file (requires sudo)
+- Wait for pods to be ready
+- Display the status of all pods
+
+### Accessing the Application
+
+After deployment, you can access:
+
+- NestJS Application: http://localhost:30000/api
+- Swagger Documentation: http://localhost:30000/api/docs
+- Scalar API Reference: http://localhost:30000/api/reference
+- Grafana Dashboard: http://localhost:3001 (default credentials: admin/admin)
+- Jaeger UI: http://localhost:16686
+
+### Updating the Deployment
+
+To update an existing deployment with code changes:
+
+```bash
+./k8s/update.sh
+```
+
+### Troubleshooting
+
+- If pods are restarting or crashing, check the logs with: `kubectl logs -n nestjs-starter -l app=nestjs-app`
+- For database issues, check PostgreSQL logs: `kubectl logs -n nestjs-starter -l app=postgres`
+- For Redis issues, check Redis logs: `kubectl logs -n nestjs-starter -l app=redis`
+
 1. Create a JSON dashboard definition in `monitoring/grafana/provisioning/dashboards/`
 2. Update the dashboard configuration in `monitoring/grafana/provisioning/dashboards/dashboards.yml`
 3. Restart the Grafana container
