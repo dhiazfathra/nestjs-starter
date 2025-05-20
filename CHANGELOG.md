@@ -1,3 +1,10 @@
+# [1.10.0](https://github.com/dhiazfathra/nestjs-starter/compare/v1.9.0...v1.10.0) (2025-05-20)
+
+
+### Features
+
+* add test module with rate limiting endpoint & improved e2e tests ([#35](https://github.com/dhiazfathra/nestjs-starter/issues/35)) ([3d95490](https://github.com/dhiazfathra/nestjs-starter/commit/3d9549090a8d0936701c144341e0a6ebfe26bc14))
+
 # [1.9.0](https://github.com/dhiazfathra/nestjs-starter/compare/v1.8.0...v1.9.0) (2025-05-19)
 
 
