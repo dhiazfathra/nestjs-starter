@@ -354,18 +354,29 @@ describe('NestJS Starter E2E Tests', () => {
   });
 
   describe('Rate Limiting', () => {
-    it('should apply rate limiting after multiple requests', async () => {
-      // Make multiple requests to trigger rate limiting
-      const requests = Array(15)
-        .fill(0)
-        .map(() => request(app.getHttpServer()).get('/'));
+    it('should apply rate limiting after exceeding the limit', async () => {
+      // The test endpoint is configured with a limit of 3 requests per 10 seconds
+      // First make 3 requests that should succeed
+      for (let i = 0; i < 3; i++) {
+        await request(app.getHttpServer())
+          .get('/test/rate-limit')
+          .expect(200)
+          .expect((res) => {
+            expect(res.body).toHaveProperty(
+              'message',
+              'Rate limit test endpoint',
+            );
+          });
+      }
 
-      // Execute requests in parallel
-      const responses = await Promise.all(requests);
+      // The 4th request should be rate limited
+      const response = await request(app.getHttpServer())
+        .get('/test/rate-limit')
+        .expect(429);
 
-      // At least one request should be rate limited (429)
-      const hasRateLimited = responses.some((res) => res.status === 429);
-      expect(hasRateLimited).toBe(true);
+      // Verify the presence of the Retry-After header
+      expect(response.headers).toHaveProperty('retry-after');
+      expect(parseInt(response.headers['retry-after'], 10)).toBeGreaterThan(0);
     });
   });
 });
