@@ -75,6 +75,9 @@ jobs:
     - name: Run tests with coverage and generate JUnit XML
       run: JEST_JUNIT_CLASSNAME="{filepath}" JEST_JUNIT_OUTPUT_DIR=./junit JEST_JUNIT_OUTPUT_NAME=junit.xml npm run test:cov -- --reporters=jest-junit
 
+    - name: Verify coverage thresholds
+      run: npm run verify:coverage
+
     - name: Upload coverage reports
       uses: actions/upload-artifact@v4
       with:
