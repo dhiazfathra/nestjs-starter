@@ -62,4 +62,12 @@ export class User {
     type: Date,
   })
   updatedAt: Date;
+
+  @ApiProperty({
+    description: 'Whether the user is deleted',
+    example: false,
+    type: Boolean,
+    default: false,
+  })
+  isDeleted: boolean;
 }

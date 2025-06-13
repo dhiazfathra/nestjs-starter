@@ -52,6 +52,7 @@ describe('AuthService', () => {
         firstName: 'Test',
         lastName: 'User',
         role: Role.USER,
+        isDeleted: false,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -67,6 +68,7 @@ describe('AuthService', () => {
         firstName: 'Test',
         lastName: 'User',
         role: Role.USER,
+        isDeleted: false,
         createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
       });
@@ -92,6 +94,7 @@ describe('AuthService', () => {
         firstName: 'Test',
         lastName: 'User',
         role: Role.USER,
+        isDeleted: false,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -121,6 +124,7 @@ describe('AuthService', () => {
         firstName: 'Test',
         lastName: 'User',
         role: Role.USER,
+        isDeleted: false,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
