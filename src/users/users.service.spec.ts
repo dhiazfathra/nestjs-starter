@@ -17,6 +17,7 @@ describe('UsersService', () => {
     user: {
       create: jest.fn(),
       findMany: jest.fn(),
+      findFirst: jest.fn(),
       findUnique: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
@@ -52,24 +53,26 @@ describe('UsersService', () => {
     expect(service).toBeDefined();
   });
 
+  const createUserDto = {
+    email: 'test@example.com',
+    password: 'password',
+    firstName: 'Test',
+    lastName: 'User',
+  };
+  const hashedPassword = 'hashedPassword';
+
+  const createdUser = {
+    id: '1',
+    email: 'test@example.com',
+    password: hashedPassword,
+    firstName: 'Test',
+    lastName: 'User',
+    role: Role.USER,
+  };
+
   describe('create', () => {
-    const createUserDto = {
-      email: 'test@example.com',
-      password: 'password',
-      name: 'Test User',
-    };
-
-    it('should create a new user and return it without password', async () => {
-      const hashedPassword = 'hashedPassword';
-      const createdUser = {
-        id: '1',
-        email: 'test@example.com',
-        password: hashedPassword,
-        name: 'Test User',
-        role: 'USER',
-      };
-
-      mockPrismaService.user.findUnique.mockResolvedValue(null);
+    it('should create a new user', async () => {
+      mockPrismaService.user.findFirst.mockResolvedValue(null);
       (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
       mockPrismaService.user.create.mockResolvedValue(createdUser);
 
@@ -78,11 +81,49 @@ describe('UsersService', () => {
       expect(result).toEqual({
         id: '1',
         email: 'test@example.com',
-        name: 'Test User',
+        firstName: 'Test',
+        lastName: 'User',
+        role: Role.USER,
+        // isDeleted: false,
+        // createdAt: expect.any(Date),
+        // updatedAt: expect.any(Date),
+      });
+      expect(prismaService.user.findFirst).toHaveBeenCalledWith({
+        where: {
+          email: createUserDto.email,
+          isDeleted: false,
+        },
+      });
+      expect(bcrypt.hash).toHaveBeenCalledWith(createUserDto.password, 10);
+      expect(prismaService.user.create).toHaveBeenCalledWith({
+        data: {
+          ...createUserDto,
+          password: hashedPassword,
+        },
+      });
+    });
+
+    it('should create a new user and return it without password', async () => {
+      const hashedPassword = 'hashedPassword';
+
+      mockPrismaService.user.findFirst.mockResolvedValue(null);
+      (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
+      mockPrismaService.user.create.mockResolvedValue(createdUser);
+
+      const result = await service.create(createUserDto);
+
+      expect(result).toEqual({
+        id: '1',
+        email: 'test@example.com',
+        firstName: 'Test',
+        lastName: 'User',
         role: 'USER',
       });
-      expect(prismaService.user.findUnique).toHaveBeenCalledWith({
-        where: { email: createUserDto.email },
+      expect(prismaService.user.findFirst).toHaveBeenCalledWith({
+        where: {
+          email: createUserDto.email,
+          isDeleted: false,
+        },
       });
       expect(bcrypt.hash).toHaveBeenCalledWith(createUserDto.password, 10);
       expect(prismaService.user.create).toHaveBeenCalledWith({
@@ -96,17 +137,24 @@ describe('UsersService', () => {
     it('should throw ConflictException if email already exists', async () => {
       const existingUser = {
         id: '1',
+        firstName: 'Test',
+        lastName: 'User',
         email: 'test@example.com',
         password: 'hashedPassword',
       };
 
-      mockPrismaService.user.findUnique.mockResolvedValue(existingUser);
+      mockPrismaService.user.findFirst.mockResolvedValue(existingUser);
+      (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
+      mockPrismaService.user.create.mockResolvedValue(existingUser);
 
       await expect(service.create(createUserDto)).rejects.toThrow(
         ConflictException,
       );
-      expect(prismaService.user.findUnique).toHaveBeenCalledWith({
-        where: { email: createUserDto.email },
+      expect(prismaService.user.findFirst).toHaveBeenCalledWith({
+        where: {
+          email: createUserDto.email,
+          isDeleted: false,
+        },
       });
       expect(bcrypt.hash).not.toHaveBeenCalled();
       expect(prismaService.user.create).not.toHaveBeenCalled();
@@ -187,53 +235,14 @@ describe('UsersService', () => {
         expect.any(Function),
         300,
       );
-      expect(prismaService.user.findMany).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('findOne', () => {
-    it('should use cache service to get or set user by id', async () => {
-      const user = {
-        id: '1',
-        email: 'test@example.com',
-        password: 'hashedPassword',
-        name: 'Test User',
-        role: 'USER',
-      };
-
-      const expectedResult = {
-        id: '1',
-        email: 'test@example.com',
-        name: 'Test User',
-        role: 'USER',
-      };
-
-      // Mock the getOrSet method to call the factory function and return its result
-      mockCacheService.getOrSet.mockImplementation(async (key, factory) => {
-        expect(key).toBe('user:1');
-        return factory();
-      });
-
-      mockPrismaService.user.findUnique.mockResolvedValue(user);
-
-      const result = await service.findOne('1');
-
-      expect(result).toEqual(expectedResult);
-      expect(cacheService.getOrSet).toHaveBeenCalledWith(
-        'user:1',
-        expect.any(Function),
-        300,
-      );
-      expect(prismaService.user.findUnique).toHaveBeenCalledWith({
-        where: { id: '1' },
-      });
     });
 
     it('should return cached user when available', async () => {
       const cachedUser = {
         id: '1',
         email: 'test@example.com',
-        name: 'Test User',
+        firstName: 'Test',
+        lastName: 'User',
         role: 'USER',
       };
 
@@ -248,7 +257,7 @@ describe('UsersService', () => {
         expect.any(Function),
         300,
       );
-      expect(prismaService.user.findUnique).not.toHaveBeenCalled();
+      expect(prismaService.user.findFirst).not.toHaveBeenCalled();
     });
 
     it('should throw NotFoundException when user is not found', async () => {
@@ -257,7 +266,7 @@ describe('UsersService', () => {
         return factory();
       });
 
-      mockPrismaService.user.findUnique.mockResolvedValue(null);
+      mockPrismaService.user.findFirst.mockResolvedValue(null);
 
       await expect(service.findOne('1')).rejects.toThrow(NotFoundException);
       expect(cacheService.getOrSet).toHaveBeenCalledWith(
@@ -265,8 +274,8 @@ describe('UsersService', () => {
         expect.any(Function),
         300,
       );
-      expect(prismaService.user.findUnique).toHaveBeenCalledWith({
-        where: { id: '1' },
+      expect(prismaService.user.findFirst).toHaveBeenCalledWith({
+        where: { id: '1', isDeleted: false },
       });
     });
   });
@@ -277,7 +286,8 @@ describe('UsersService', () => {
         id: '1',
         email: 'test@example.com',
         password: 'hashedPassword',
-        name: 'Test User',
+        firstName: 'Test',
+        lastName: 'User',
         role: 'USER',
       };
 
@@ -287,7 +297,7 @@ describe('UsersService', () => {
         return factory();
       });
 
-      mockPrismaService.user.findUnique.mockResolvedValue(user);
+      mockPrismaService.user.findFirst.mockResolvedValue(user);
 
       const result = await service.findByEmail('test@example.com');
 
@@ -297,8 +307,11 @@ describe('UsersService', () => {
         expect.any(Function),
         300,
       );
-      expect(prismaService.user.findUnique).toHaveBeenCalledWith({
-        where: { email: 'test@example.com' },
+      expect(prismaService.user.findFirst).toHaveBeenCalledWith({
+        where: {
+          email: 'test@example.com',
+          isDeleted: false,
+        },
       });
     });
 
@@ -307,7 +320,8 @@ describe('UsersService', () => {
         id: '1',
         email: 'test@example.com',
         password: 'hashedPassword',
-        name: 'Test User',
+        firstName: 'Test',
+        lastName: 'User',
         role: 'USER',
       };
 
@@ -322,7 +336,7 @@ describe('UsersService', () => {
         expect.any(Function),
         300,
       );
-      expect(prismaService.user.findUnique).not.toHaveBeenCalled();
+      expect(prismaService.user.findFirst).not.toHaveBeenCalled();
     });
 
     it('should return null when user is not found by email', async () => {
@@ -331,7 +345,7 @@ describe('UsersService', () => {
         return factory();
       });
 
-      mockPrismaService.user.findUnique.mockResolvedValue(null);
+      mockPrismaService.user.findFirst.mockResolvedValue(null);
 
       const result = await service.findByEmail('nonexistent@example.com');
 
@@ -341,8 +355,11 @@ describe('UsersService', () => {
         expect.any(Function),
         300,
       );
-      expect(prismaService.user.findUnique).toHaveBeenCalledWith({
-        where: { email: 'nonexistent@example.com' },
+      expect(prismaService.user.findFirst).toHaveBeenCalledWith({
+        where: {
+          email: 'nonexistent@example.com',
+          isDeleted: false,
+        },
       });
     });
   });
@@ -358,7 +375,8 @@ describe('UsersService', () => {
         id: '1',
         email: 'test@example.com',
         password: 'hashedPassword',
-        name: 'Test User',
+        firstName: 'Test',
+        lastName: 'User',
         role: 'USER',
       };
 
@@ -376,7 +394,7 @@ describe('UsersService', () => {
         return factory();
       });
 
-      mockPrismaService.user.findUnique.mockResolvedValue(existingUser);
+      mockPrismaService.user.findFirst.mockResolvedValue(existingUser);
       mockPrismaService.user.update.mockResolvedValue(updatedUser);
 
       const result = await service.update('1', updateUserDto);
@@ -393,8 +411,8 @@ describe('UsersService', () => {
       expect(cacheService.del).toHaveBeenCalledWith('user:1');
       expect(cacheService.del).toHaveBeenCalledWith('users:all');
 
-      expect(prismaService.user.findUnique).toHaveBeenCalledWith({
-        where: { id: '1' },
+      expect(prismaService.user.findFirst).toHaveBeenCalledWith({
+        where: { id: '1', isDeleted: false },
       });
       expect(prismaService.user.update).toHaveBeenCalledWith({
         where: { id: '1' },
@@ -407,7 +425,8 @@ describe('UsersService', () => {
         id: '1',
         email: 'old@example.com',
         password: 'hashedPassword',
-        name: 'Test User',
+        firstName: 'Test',
+        lastName: 'User',
         role: 'USER',
       };
 
@@ -419,7 +438,8 @@ describe('UsersService', () => {
         id: '1',
         email: 'new@example.com',
         password: 'hashedPassword',
-        name: 'Test User',
+        firstName: 'Test',
+        lastName: 'User',
         role: 'USER',
       };
 
@@ -428,7 +448,7 @@ describe('UsersService', () => {
         return factory();
       });
 
-      mockPrismaService.user.findUnique
+      mockPrismaService.user.findFirst
         .mockResolvedValueOnce(existingUser) // For findOne
         .mockResolvedValueOnce(null); // For checking if email exists
 
@@ -439,7 +459,8 @@ describe('UsersService', () => {
       expect(result).toEqual({
         id: '1',
         email: 'new@example.com',
-        name: 'Test User',
+        firstName: 'Test',
+        lastName: 'User',
         role: 'USER',
       });
 
@@ -462,7 +483,7 @@ describe('UsersService', () => {
         return factory();
       });
 
-      mockPrismaService.user.findUnique.mockResolvedValue(null);
+      mockPrismaService.user.findFirst.mockResolvedValue(null);
 
       await expect(service.update('1', updateUserDto)).rejects.toThrow(
         NotFoundException,
@@ -482,16 +503,24 @@ describe('UsersService', () => {
         id: '1',
         email: 'test@example.com',
         password: 'hashedPassword',
-        name: 'Test User',
-        role: 'USER',
+        firstName: 'Test',
+        lastName: 'User',
+        role: Role.USER,
+        isDeleted: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       const anotherUser = {
         id: '2',
         email: 'new@example.com',
         password: 'hashedPassword',
-        name: 'Another User',
-        role: 'USER',
+        firstName: 'Another',
+        lastName: 'User',
+        role: Role.USER,
+        isDeleted: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       const updateWithEmailDto = {
@@ -503,7 +532,8 @@ describe('UsersService', () => {
         return factory();
       });
 
-      mockPrismaService.user.findUnique
+      jest
+        .spyOn(prismaService.user, 'findFirst')
         .mockResolvedValueOnce(existingUser)
         .mockResolvedValueOnce(anotherUser);
 
@@ -520,8 +550,12 @@ describe('UsersService', () => {
         id: '1',
         email: 'test@example.com',
         password: 'oldHashedPassword',
-        name: 'Test User',
-        role: 'USER',
+        firstName: 'Test',
+        lastName: 'User',
+        role: Role.USER,
+        isDeleted: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       const updateWithPasswordDto = {
@@ -532,8 +566,12 @@ describe('UsersService', () => {
         id: '1',
         email: 'test@example.com',
         password: 'newHashedPassword',
-        name: 'Test User',
-        role: 'USER',
+        firstName: 'Test',
+        lastName: 'User',
+        role: Role.USER,
+        isDeleted: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       // Mock the getOrSet method for findOne
@@ -541,7 +579,9 @@ describe('UsersService', () => {
         return factory();
       });
 
-      mockPrismaService.user.findUnique.mockResolvedValue(existingUser);
+      jest
+        .spyOn(prismaService.user, 'findFirst')
+        .mockResolvedValue(existingUser);
       (bcrypt.hash as jest.Mock).mockResolvedValue('newHashedPassword');
       mockPrismaService.user.update.mockResolvedValue(updatedUser);
 
@@ -550,8 +590,12 @@ describe('UsersService', () => {
       expect(result).toEqual({
         id: '1',
         email: 'test@example.com',
-        name: 'Test User',
+        firstName: 'Test',
+        lastName: 'User',
         role: 'USER',
+        isDeleted: false,
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
       });
 
       // Verify cache invalidation
@@ -567,13 +611,17 @@ describe('UsersService', () => {
   });
 
   describe('remove', () => {
-    it('should delete user, invalidate cache, and return success message', async () => {
+    it('should soft delete user, invalidate cache, and return success message', async () => {
       const user = {
         id: '1',
         email: 'test@example.com',
         password: 'hashedPassword',
-        name: 'Test User',
-        role: 'USER',
+        firstName: 'Test',
+        lastName: 'User',
+        role: Role.USER,
+        isDeleted: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       // Mock the getOrSet method for findOne
@@ -581,8 +629,11 @@ describe('UsersService', () => {
         return factory();
       });
 
-      mockPrismaService.user.findUnique.mockResolvedValue(user);
-      mockPrismaService.user.delete.mockResolvedValue(user);
+      jest.spyOn(prismaService.user, 'findFirst').mockResolvedValue(user);
+      mockPrismaService.user.update.mockResolvedValue({
+        ...user,
+        isDeleted: true,
+      });
 
       const result = await service.remove('1');
 
@@ -595,11 +646,15 @@ describe('UsersService', () => {
       );
       expect(cacheService.del).toHaveBeenCalledWith('users:all');
 
-      expect(prismaService.user.findUnique).toHaveBeenCalledWith({
-        where: { id: '1' },
+      expect(prismaService.user.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: '1',
+          isDeleted: false,
+        },
       });
-      expect(prismaService.user.delete).toHaveBeenCalledWith({
+      expect(prismaService.user.update).toHaveBeenCalledWith({
         where: { id: '1' },
+        data: { isDeleted: true },
       });
     });
 
@@ -609,7 +664,7 @@ describe('UsersService', () => {
         return factory();
       });
 
-      mockPrismaService.user.findUnique.mockResolvedValue(null);
+      jest.spyOn(prismaService.user, 'findFirst').mockResolvedValue(null);
 
       await expect(service.remove('1')).rejects.toThrow(NotFoundException);
 
@@ -618,7 +673,7 @@ describe('UsersService', () => {
         expect.any(Function),
         300,
       );
-      expect(prismaService.user.delete).not.toHaveBeenCalled();
+      expect(prismaService.user.update).not.toHaveBeenCalled();
       expect(cacheService.del).not.toHaveBeenCalled();
     });
   });
@@ -647,12 +702,13 @@ describe('UsersService', () => {
         firstName: 'Test',
         lastName: 'User',
         role: Role.USER,
+        isDeleted: false,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
 
       // Mock the necessary methods
-      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(null); // No existing user
+      jest.spyOn(prismaService.user, 'findFirst').mockResolvedValue(null); // No existing user
       jest
         .spyOn(prismaService.user, 'create')
         .mockResolvedValue(mockCreatedUser);

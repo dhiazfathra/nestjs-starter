@@ -17,9 +17,12 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    // Check if user with email already exists
-    const existingUser = await this.prisma.user.findUnique({
-      where: { email: createUserDto.email },
+    // Check if user with email already exists (only among non-deleted users)
+    const existingUser = await this.prisma.user.findFirst({
+      where: {
+        email: createUserDto.email,
+        isDeleted: false,
+      },
     });
 
     if (existingUser) {
@@ -46,7 +49,9 @@ export class UsersService {
     return this.cacheService.getOrSet(
       'users:all',
       async () => {
-        const users = await this.prisma.user.findMany();
+        const users = await this.prisma.user.findMany({
+          where: { isDeleted: false },
+        });
         return users.map(({ password: _, ...rest }) => rest);
       },
       300, // Cache for 5 minutes
@@ -57,8 +62,11 @@ export class UsersService {
     return this.cacheService.getOrSet(
       `user:${id}`,
       async () => {
-        const user = await this.prisma.user.findUnique({
-          where: { id },
+        const user = await this.prisma.user.findFirst({
+          where: {
+            id,
+            isDeleted: false,
+          },
         });
 
         if (!user) {
@@ -76,8 +84,11 @@ export class UsersService {
     return this.cacheService.getOrSet(
       `user:email:${email}`,
       async () => {
-        return this.prisma.user.findUnique({
-          where: { email },
+        return this.prisma.user.findFirst({
+          where: {
+            email,
+            isDeleted: false,
+          },
         });
       },
       300, // Cache for 5 minutes
@@ -88,10 +99,13 @@ export class UsersService {
     // Check if user exists
     await this.findOne(id);
 
-    // If updating email, check if new email is already in use
+    // If updating email, check if new email is already in use by a non-deleted user
     if (updateUserDto.email) {
-      const existingUser = await this.prisma.user.findUnique({
-        where: { email: updateUserDto.email },
+      const existingUser = await this.prisma.user.findFirst({
+        where: {
+          email: updateUserDto.email,
+          isDeleted: false,
+        },
       });
 
       if (existingUser && existingUser.id !== id) {
@@ -129,9 +143,10 @@ export class UsersService {
     // Check if user exists
     const user = await this.findOne(id);
 
-    // Delete the user
-    await this.prisma.user.delete({
+    // Soft delete the user by setting isDeleted to true
+    await this.prisma.user.update({
       where: { id },
+      data: { isDeleted: true },
     });
 
     // Invalidate cache for this user

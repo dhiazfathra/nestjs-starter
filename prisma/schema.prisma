@@ -17,8 +17,11 @@ model User {
   firstName String?
   lastName  String?
   role      Role     @default(USER)
+  isDeleted Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([isDeleted])
 }
 
 enum Role {
