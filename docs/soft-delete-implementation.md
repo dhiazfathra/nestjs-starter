@@ -40,6 +40,7 @@ CREATE UNIQUE INDEX "User_email_where_not_deleted" ON "User"("email") WHERE ("is
 ```
 
 This creates a partial unique index on the email field that only applies to non-deleted users. This allows:
+
 - Deleted users to have duplicate emails (since they're soft-deleted)
 - Active users to maintain email uniqueness
 

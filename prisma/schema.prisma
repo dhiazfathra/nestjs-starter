@@ -12,7 +12,7 @@ datasource db {
 
 model User {
   id        String   @id @default(uuid())
-  email     String   @unique
+  email     String // Uniqueness handled by partial index
   password  String
   firstName String?
   lastName  String?
