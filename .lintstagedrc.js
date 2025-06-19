@@ -1,4 +1,5 @@
 module.exports = {
+  // js not included as it uses require import
   '*.{ts}': [
     'eslint --fix',
     (filenames) => {
