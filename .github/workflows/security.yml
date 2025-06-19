@@ -184,7 +184,7 @@ jobs:
 
       - name: Generate ESLint SARIF report
         run: |
-          npx eslint "{src,apps,libs,test}/**/*.ts" --cache --format @microsoft/eslint-formatter-sarif --output-file eslint-sarif.json || true
+          npx eslint "{src,apps,libs,test,prisma}/**/*.ts" --cache --format @microsoft/eslint-formatter-sarif --output-file eslint-sarif.json || true
 
       # Upload ESLint SARIF results to GitHub Security tab
       - name: Upload ESLint SARIF file
