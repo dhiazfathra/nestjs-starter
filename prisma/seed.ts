@@ -16,30 +16,50 @@ async function main() {
   const hashedPassword = await bcrypt.hash('admin123', saltRounds);
 
   // Create admin user
-  const admin = await prisma.user.upsert({
-    where: { email: 'admin@example.com' },
-    update: {},
-    create: {
+  let admin = await prisma.user.findFirst({
+    where: {
       email: 'admin@example.com',
-      password: hashedPassword,
-      firstName: 'Admin',
-      lastName: 'User',
-      role: Role.ADMIN,
+      isDeleted: false,
     },
   });
 
+  if (!admin) {
+    admin = await prisma.user.create({
+      data: {
+        email: 'admin@example.com',
+        password: hashedPassword,
+        firstName: 'Admin',
+        lastName: 'User',
+        role: Role.ADMIN,
+      },
+    });
+    console.log('Admin user created');
+  } else {
+    console.log('Admin user already exists');
+  }
+
   // Create regular user
-  const user = await prisma.user.upsert({
-    where: { email: 'user@example.com' },
-    update: {},
-    create: {
+  let user = await prisma.user.findFirst({
+    where: {
       email: 'user@example.com',
-      password: hashedPassword,
-      firstName: 'Regular',
-      lastName: 'User',
-      role: Role.USER,
+      isDeleted: false,
     },
   });
+
+  if (!user) {
+    user = await prisma.user.create({
+      data: {
+        email: 'user@example.com',
+        password: hashedPassword,
+        firstName: 'Regular',
+        lastName: 'User',
+        role: Role.USER,
+      },
+    });
+    console.log('Regular user created');
+  } else {
+    console.log('Regular user already exists');
+  }
 
   console.log({ admin, user });
 }
