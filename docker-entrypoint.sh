@@ -6,7 +6,7 @@ term_handler() {
   echo "Received SIGTERM signal, shutting down gracefully..."
   # Forward the signal to the Node.js process
   kill -SIGTERM "$child"
-  
+
   # Wait for the process to terminate
   wait "$child"
   echo "Application terminated gracefully"

@@ -41,7 +41,7 @@ jobs:
       contents: read
       security-events: write
       actions: read
-      
+
     # Add a step to check for cache skip flag in commit message
     env:
       SKIP_CACHE_RESTORE: false
@@ -146,7 +146,7 @@ jobs:
     permissions:
       contents: read
       security-events: write
-      
+
     # Add a step to check for cache skip flag in commit message
     env:
       SKIP_CACHE_RESTORE: false
