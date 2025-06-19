@@ -4,6 +4,20 @@ import * as bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 /**
+ * Interface for email configuration
+ */
+interface EmailConfig {
+  emailHost: string;
+  emailPort: number;
+  emailUsername: string;
+  emailPassword: string;
+  emailSecure: boolean;
+  imapEnabled: boolean;
+  smtpEnabled: boolean;
+  pop3Enabled: boolean;
+}
+
+/**
  * Creates a user if they do not exist.
  *
  * @param email - The email of the user.
@@ -12,6 +26,7 @@ const prisma = new PrismaClient();
  * @param role - The role of the user.
  * @param hashedPassword - The hashed password of the user.
  * @param userType - The type of the user.
+ * @param emailConfig - The email configuration for the user.
  * @returns The created user.
  */
 async function createUserIfNotExists(
@@ -21,6 +36,7 @@ async function createUserIfNotExists(
   role: Role,
   hashedPassword: string,
   userType: string,
+  emailConfig?: EmailConfig,
 ) {
   let user = await prisma.user.findFirst({
     where: {
@@ -37,6 +53,16 @@ async function createUserIfNotExists(
         firstName,
         lastName,
         role,
+        ...(emailConfig && {
+          emailHost: emailConfig.emailHost,
+          emailPort: emailConfig.emailPort,
+          emailUsername: emailConfig.emailUsername,
+          emailPassword: emailConfig.emailPassword,
+          emailSecure: emailConfig.emailSecure,
+          imapEnabled: emailConfig.imapEnabled,
+          smtpEnabled: emailConfig.smtpEnabled,
+          pop3Enabled: emailConfig.pop3Enabled,
+        }),
       },
     });
     console.log(`${userType} user created`);
@@ -50,14 +76,39 @@ async function createUserIfNotExists(
 /**
  * Seeds the database with an admin and a regular user, creating them if they do not exist.
  *
- * The users are initialized with predefined emails, names, roles, and a securely hashed password.
+ * The users are initialized with predefined emails, names, roles, a securely hashed password,
+ * and email configuration settings.
  *
  * @remark
  * If the users already exist, no updates are made to their records.
  */
 async function main() {
   const saltRounds = 10;
-  const hashedPassword = await bcrypt.hash('admin123', saltRounds);
+  const hashedPassword = await bcrypt.hash('Password123!', saltRounds);
+
+  // Email configuration for admin
+  const adminEmailConfig: EmailConfig = {
+    emailHost: 'smtp.gmail.com',
+    emailPort: 465,
+    emailUsername: 'admin@example.com',
+    emailPassword: 'app-specific-password',
+    emailSecure: true,
+    imapEnabled: true,
+    smtpEnabled: true,
+    pop3Enabled: false,
+  };
+
+  // Email configuration for regular user
+  const userEmailConfig: EmailConfig = {
+    emailHost: 'smtp.gmail.com',
+    emailPort: 465,
+    emailUsername: 'user@example.com',
+    emailPassword: 'app-specific-password',
+    emailSecure: true,
+    imapEnabled: true,
+    smtpEnabled: true,
+    pop3Enabled: true,
+  };
 
   // Create admin user
   const admin = await createUserIfNotExists(
@@ -67,6 +118,7 @@ async function main() {
     Role.ADMIN,
     hashedPassword,
     'Admin',
+    adminEmailConfig,
   );
 
   // Create regular user
@@ -77,6 +129,7 @@ async function main() {
     Role.USER,
     hashedPassword,
     'User',
+    userEmailConfig,
   );
 
   console.log({ admin, user });
