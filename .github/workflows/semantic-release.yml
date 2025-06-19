@@ -29,12 +29,28 @@ jobs:
       contents: write
       issues: write
       pull-requests: write
+    
+    # Add a step to check for cache skip flag in commit message
+    env:
+      SKIP_CACHE_RESTORE: false
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           persist-credentials: false
+          
+      # Check for cache skip flag in commit message
+      - name: Check for cache skip flag
+        id: check_cache_skip
+        run: |
+          if git log -1 --pretty=%B | grep -q "\[skip-cache\]"; then
+            echo "SKIP_CACHE_RESTORE=true" >> $GITHUB_ENV
+            echo "Cache restore will be skipped due to [skip-cache] in commit message"
+          else
+            echo "SKIP_CACHE_RESTORE=false" >> $GITHUB_ENV
+            echo "Normal cache behavior"
+          fi
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -49,8 +65,7 @@ jobs:
         with:
           path: node_modules
           key: ${{ runner.os }}-node-lts-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-lts-
+          restore-keys: ${{ env.SKIP_CACHE_RESTORE != 'true' && '${{ runner.os }}-node-lts-' || '' }}
 
       - name: Install dependencies
         if: steps.node-modules-cache.outputs.cache-hit != 'true'
@@ -63,8 +78,7 @@ jobs:
           path: |
             node_modules/.cache/jest
           key: ${{ runner.os }}-jest-${{ hashFiles('**/jest.config.js') }}-${{ hashFiles('**/*.spec.ts') }}
-          restore-keys: |
-            ${{ runner.os }}-jest-
+          restore-keys: ${{ env.SKIP_CACHE_RESTORE != 'true' && '${{ runner.os }}-jest-' || '' }}
 
       - name: Run tests
         run: npm test
@@ -75,6 +89,7 @@ jobs:
         with:
           path: dist
           key: ${{ runner.os }}-build-${{ github.sha }}
+          restore-keys: ${{ env.SKIP_CACHE_RESTORE != 'true' && '${{ runner.os }}-build-' || '' }}
 
       - name: Build
         run: npm run build
@@ -86,6 +101,7 @@ jobs:
           path: |
             node_modules/.cache/semantic-release
           key: ${{ runner.os }}-semantic-release-${{ hashFiles('.releaserc.json') }}
+          restore-keys: ${{ env.SKIP_CACHE_RESTORE != 'true' && '${{ runner.os }}-semantic-release-' || '' }}
 
       - name: Disable husky hooks for CI
         run: |
