@@ -41,10 +41,6 @@ jobs:
       contents: read
       security-events: write
       actions: read
-      
-    # Add a step to check for cache skip flag in commit message
-    env:
-      SKIP_CACHE_RESTORE: false
 
     steps:
       - name: Checkout repository
@@ -146,10 +142,6 @@ jobs:
     permissions:
       contents: read
       security-events: write
-      
-    # Add a step to check for cache skip flag in commit message
-    env:
-      SKIP_CACHE_RESTORE: false
 
     steps:
       - name: Checkout repository
@@ -180,20 +172,11 @@ jobs:
       # Cache ESLint results
       - name: Cache ESLint results
         uses: actions/cache@v4
-        if: steps.check_cache_skip.outputs.skip_cache_detected != 'true'
         with:
           path: .eslintcache
           key: ${{ runner.os }}-eslint-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-eslint-
-            
-      # Cache ESLint results (save only, no restore)
-      - name: Cache ESLint results (save only)
-        uses: actions/cache@v4
-        if: steps.check_cache_skip.outputs.skip_cache_detected == 'true'
-        with:
-          path: .eslintcache
-          key: ${{ runner.os }}-eslint-${{ github.sha }}
 
       # Generate ESLint SARIF report for security issues
       - name: Install ESLint SARIF formatter
