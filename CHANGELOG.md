@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/dhiazfathra/nestjs-starter/compare/v1.10.0...v1.11.0) (2025-06-19)
+
+
+### Features
+
+* implement soft delete for users with partial unique index on email ([#50](https://github.com/dhiazfathra/nestjs-starter/issues/50)) ([c5539aa](https://github.com/dhiazfathra/nestjs-starter/commit/c5539aaa801dd2b7f0b261281c99b3392e30ae1c))
+
 # [1.10.0](https://github.com/dhiazfathra/nestjs-starter/compare/v1.9.0...v1.10.0) (2025-05-20)
 
 
