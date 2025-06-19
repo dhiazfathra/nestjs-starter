@@ -7,7 +7,6 @@ on:
       - 'src/**/*.ts'
       - 'test/**/*.ts'
       - 'prisma/**/*.ts'
-      - 'prisma/**/*.js'
       - 'package.json'
       - 'package-lock.json'
       - 'tsconfig.json'
@@ -20,7 +19,6 @@ on:
       - 'src/**/*.ts'
       - 'test/**/*.ts'
       - 'prisma/**/*.ts'
-      - 'prisma/**/*.js'
       - 'package.json'
       - 'package-lock.json'
       - 'tsconfig.json'
@@ -150,7 +148,7 @@ jobs:
         fi
 
     - name: Generate ESLint report
-      run: npx eslint --cache "{src,apps,libs,test,prisma}/**/*.ts" --format json --output-file eslint-report.json || true
+      run: npx eslint --cache "{src,apps,libs,test}/**/*.ts" --format json --output-file eslint-report.json || true
 
     - name: ESLint check (for CI status)
       run: npm run lint -- --cache
