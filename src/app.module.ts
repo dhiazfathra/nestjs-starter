@@ -13,6 +13,7 @@ import { TracingModule } from './tracing/tracing.module';
 import { TracingMiddleware } from './tracing/tracing.middleware';
 import { ChaosModule } from './chaos/chaos.module';
 import { TestModule } from './test/test.module';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { TestModule } from './test/test.module';
     TracingModule,
     ChaosModule,
     TestModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

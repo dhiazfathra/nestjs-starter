@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,17 +8,57 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String // Uniqueness handled by partial index
-  password  String
-  firstName String?
-  lastName  String?
-  role      Role     @default(USER)
-  isDeleted Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(uuid())
+  email         String
+  password      String
+  firstName     String?
+  lastName      String?
+  role          Role     @default(USER)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  isDeleted     Boolean  @default(false)
+  emailHost     String?
+  emailPassword String?
+  emailPort     Int?
+  emailSecure   Boolean? @default(true)
+  emailUsername String?
+  imapEnabled   Boolean? @default(false)
+  pop3Enabled   Boolean? @default(false)
+  smtpEnabled   Boolean? @default(false)
+  emails        Email[]
 
   @@index([isDeleted])
+}
+
+model Email {
+  id          String    @id @default(uuid())
+  messageId   String?
+  from        String
+  to          String[]
+  cc          String[]  @default([])
+  bcc         String[]  @default([])
+  subject     String?
+  text        String?
+  html        String?
+  attachments Json?
+  isRead      Boolean   @default(false)
+  isFlagged   Boolean   @default(false)
+  isDeleted   Boolean   @default(false)
+  isSpam      Boolean   @default(false)
+  isDraft     Boolean   @default(false)
+  isSent      Boolean   @default(false)
+  folder      String    @default("INBOX")
+  receivedAt  DateTime?
+  sentAt      DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isDeleted])
+  @@index([folder])
+  @@index([receivedAt])
 }
 
 enum Role {
