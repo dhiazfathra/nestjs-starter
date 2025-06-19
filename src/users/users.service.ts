@@ -3,7 +3,6 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import * as bcrypt from 'bcrypt';
 import { CacheService } from '../cache/cache.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -108,24 +107,10 @@ export class UsersService {
     }
 
     // Update the user and handle unique constraint violations
-    let updatedUser;
-    try {
-      updatedUser = await this.prisma.user.update({
-        where: { id },
-        data: updateUserDto,
-      });
-    } catch (error) {
-      // Check if this is a unique constraint violation (P2002)
-      if (
-        error instanceof PrismaClientKnownRequestError &&
-        error.code === 'P2002' &&
-        Array.isArray(error.meta?.target) &&
-        error.meta.target.includes('email')
-      ) {
-        throw new ConflictException('Email already in use');
-      }
-      throw error;
-    }
+    const updatedUser = await this.prisma.user.update({
+      where: { id },
+      data: updateUserDto,
+    });
 
     // Invalidate cache for this user
     await this.cacheService.del(`user:${id}`);

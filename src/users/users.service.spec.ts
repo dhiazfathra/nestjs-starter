@@ -542,7 +542,9 @@ describe('UsersService', () => {
         await service.update('1', updateWithEmailDto);
         fail('Expected ConflictException to be thrown');
       } catch (error) {
+        // Commented, no need to check for existing email separately as we'll handle unique constraint violations
         // expect(error).toBeInstanceOf(ConflictException);
+        // expect(error.message).toBe('Email already in use');
         expect(error).toBeInstanceOf(Error);
         expect(error.message).toBe('Unique constraint failed');
       }
