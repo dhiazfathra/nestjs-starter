@@ -4,6 +4,50 @@ import * as bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 /**
+ * Creates a user if they do not exist.
+ *
+ * @param email - The email of the user.
+ * @param firstName - The first name of the user.
+ * @param lastName - The last name of the user.
+ * @param role - The role of the user.
+ * @param hashedPassword - The hashed password of the user.
+ * @param userType - The type of the user.
+ * @returns The created user.
+ */
+async function createUserIfNotExists(
+  email: string,
+  firstName: string,
+  lastName: string,
+  role: Role,
+  hashedPassword: string,
+  userType: string,
+) {
+  let user = await prisma.user.findFirst({
+    where: {
+      email,
+      isDeleted: false,
+    },
+  });
+
+  if (!user) {
+    user = await prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        firstName,
+        lastName,
+        role,
+      },
+    });
+    console.log(`${userType} user created`);
+  } else {
+    console.log(`${userType} user already exists`);
+  }
+
+  return user;
+}
+
+/**
  * Seeds the database with an admin and a regular user, creating them if they do not exist.
  *
  * The users are initialized with predefined emails, names, roles, and a securely hashed password.
@@ -16,30 +60,24 @@ async function main() {
   const hashedPassword = await bcrypt.hash('admin123', saltRounds);
 
   // Create admin user
-  const admin = await prisma.user.upsert({
-    where: { email: 'admin@example.com' },
-    update: {},
-    create: {
-      email: 'admin@example.com',
-      password: hashedPassword,
-      firstName: 'Admin',
-      lastName: 'User',
-      role: Role.ADMIN,
-    },
-  });
+  const admin = await createUserIfNotExists(
+    'admin@example.com',
+    'Admin',
+    'User',
+    Role.ADMIN,
+    hashedPassword,
+    'Admin',
+  );
 
   // Create regular user
-  const user = await prisma.user.upsert({
-    where: { email: 'user@example.com' },
-    update: {},
-    create: {
-      email: 'user@example.com',
-      password: hashedPassword,
-      firstName: 'Regular',
-      lastName: 'User',
-      role: Role.USER,
-    },
-  });
+  const user = await createUserIfNotExists(
+    'user@example.com',
+    'Regular',
+    'User',
+    Role.USER,
+    hashedPassword,
+    'User',
+  );
 
   console.log({ admin, user });
 }

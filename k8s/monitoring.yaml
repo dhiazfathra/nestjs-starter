@@ -20,12 +20,12 @@ data:
     global:
       scrape_interval: 15s
       evaluation_interval: 15s
-    
+
     scrape_configs:
       - job_name: 'prometheus'
         static_configs:
           - targets: ['localhost:9090']
-      
+
       - job_name: 'nestjs-app'
         metrics_path: /api/metrics
         static_configs:
@@ -110,9 +110,9 @@ metadata:
   name: grafana-config
   namespace: nestjs-starter
 data:
-  GF_SECURITY_ADMIN_USER: "admin"
-  GF_SECURITY_ADMIN_PASSWORD: "admin"
-  GF_USERS_ALLOW_SIGN_UP: "false"
+  GF_SECURITY_ADMIN_USER: 'admin'
+  GF_SECURITY_ADMIN_PASSWORD: 'admin'
+  GF_USERS_ALLOW_SIGN_UP: 'false'
 ---
 apiVersion: apps/v1
 kind: Deployment

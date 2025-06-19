@@ -125,7 +125,7 @@ services:
       - prometheus
     networks:
       - nestjs-network
-      
+
   jaeger:
     image: jaegertracing/all-in-one:latest
     platform: linux/arm64/v8

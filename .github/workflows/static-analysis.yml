@@ -6,6 +6,7 @@ on:
     paths:
       - 'src/**/*.ts'
       - 'test/**/*.ts'
+      - 'prisma/**/*.ts'
       - 'package.json'
       - 'package-lock.json'
       - 'tsconfig.json'
@@ -17,6 +18,7 @@ on:
     paths:
       - 'src/**/*.ts'
       - 'test/**/*.ts'
+      - 'prisma/**/*.ts'
       - 'package.json'
       - 'package-lock.json'
       - 'tsconfig.json'
