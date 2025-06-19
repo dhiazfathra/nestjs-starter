@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import * as bcrypt from 'bcrypt';
 import { CacheService } from '../cache/cache.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -99,30 +100,32 @@ export class UsersService {
     // Check if user exists
     await this.findOne(id);
 
-    // If updating email, check if new email is already in use by a non-deleted user
-    if (updateUserDto.email) {
-      const existingUser = await this.prisma.user.findFirst({
-        where: {
-          email: updateUserDto.email,
-          isDeleted: false,
-        },
-      });
-
-      if (existingUser && existingUser.id !== id) {
-        throw new ConflictException('Email already in use');
-      }
-    }
+    // No need to check for existing email separately as we'll handle unique constraint violations
 
     // If updating password, hash it
     if (updateUserDto.password) {
       updateUserDto.password = await this.hashPassword(updateUserDto.password);
     }
 
-    // Update the user
-    const updatedUser = await this.prisma.user.update({
-      where: { id },
-      data: updateUserDto,
-    });
+    // Update the user and handle unique constraint violations
+    let updatedUser;
+    try {
+      updatedUser = await this.prisma.user.update({
+        where: { id },
+        data: updateUserDto,
+      });
+    } catch (error) {
+      // Check if this is a unique constraint violation (P2002)
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code === 'P2002' &&
+        Array.isArray(error.meta?.target) &&
+        error.meta.target.includes('email')
+      ) {
+        throw new ConflictException('Email already in use');
+      }
+      throw error;
+    }
 
     // Invalidate cache for this user
     await this.cacheService.del(`user:${id}`);
