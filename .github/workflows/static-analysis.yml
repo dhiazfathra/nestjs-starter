@@ -37,11 +37,27 @@ jobs:
   type-check:
     name: TypeScript Type Check
     runs-on: ubuntu-latest
+    
+    # Add a step to check for cache skip flag in commit message
+    env:
+      SKIP_CACHE_RESTORE: false
 
     steps:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 1
+        
+    # Check for cache skip flag in commit message
+    - name: Check for cache skip flag
+      id: check_cache_skip
+      run: |
+        if git log -1 --pretty=%B | grep -q "\[skip-cache\]"; then
+          echo "SKIP_CACHE_RESTORE=true" >> $GITHUB_ENV
+          echo "Cache restore will be skipped due to [skip-cache] in commit message"
+        else
+          echo "SKIP_CACHE_RESTORE=false" >> $GITHUB_ENV
+          echo "Normal cache behavior"
+        fi
 
     - name: Use Node.js 22.x
       uses: actions/setup-node@v4
@@ -71,9 +87,8 @@ jobs:
           node_modules/.cache/tsbuildinfo
           tsconfig.tsbuildinfo
         key: ${{ runner.os }}-tsc-${{ hashFiles('**/tsconfig.json') }}-${{ hashFiles('**/*.ts') }}
-        restore-keys: |
-          ${{ runner.os }}-tsc-${{ hashFiles('**/tsconfig.json') }}-
-          ${{ runner.os }}-tsc-
+        restore-keys: ${{ env.SKIP_CACHE_RESTORE != 'true' && '${{ runner.os }}-tsc-${{ hashFiles(''**/tsconfig.json'') }}-
+          ${{ runner.os }}-tsc-' || '' }}
 
     - name: TypeScript type check
       run: npx tsc --noEmit
@@ -81,12 +96,28 @@ jobs:
   lint:
     name: ESLint & Prettier
     runs-on: ubuntu-latest
+    
+    # Add a step to check for cache skip flag in commit message
+    env:
+      SKIP_CACHE_RESTORE: false
 
     steps:
     - uses: actions/checkout@v4
       with:
         # Full git history is needed to get a proper list of changed files for PRs
         fetch-depth: ${{ github.event_name == 'pull_request' && 0 || 1 }}
+        
+    # Check for cache skip flag in commit message
+    - name: Check for cache skip flag
+      id: check_cache_skip
+      run: |
+        if git log -1 --pretty=%B | grep -q "\[skip-cache\]"; then
+          echo "SKIP_CACHE_RESTORE=true" >> $GITHUB_ENV
+          echo "Cache restore will be skipped due to [skip-cache] in commit message"
+        else
+          echo "SKIP_CACHE_RESTORE=false" >> $GITHUB_ENV
+          echo "Normal cache behavior"
+        fi
 
     - name: Use Node.js 22.x
       uses: actions/setup-node@v4
@@ -114,8 +145,7 @@ jobs:
       with:
         path: .eslintcache
         key: ${{ runner.os }}-eslint-${{ github.sha }}
-        restore-keys: |
-          ${{ runner.os }}-eslint-
+        restore-keys: ${{ env.SKIP_CACHE_RESTORE != 'true' && '${{ runner.os }}-eslint-' || '' }}
 
     # Cache Prettier results
     - name: Cache Prettier results
@@ -123,8 +153,7 @@ jobs:
       with:
         path: node_modules/.cache/prettier
         key: ${{ runner.os }}-prettier-${{ github.sha }}
-        restore-keys: |
-          ${{ runner.os }}-prettier-
+        restore-keys: ${{ env.SKIP_CACHE_RESTORE != 'true' && '${{ runner.os }}-prettier-' || '' }}
 
     - name: Auto-fix ESLint and Prettier issues
       if: github.event_name == 'pull_request'
