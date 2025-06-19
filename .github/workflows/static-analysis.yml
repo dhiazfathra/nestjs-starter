@@ -82,13 +82,25 @@ jobs:
     # Cache TypeScript compilation results
     - name: Cache TypeScript
       uses: actions/cache@v4
+      if: steps.check_cache_skip.outputs.skip_cache_detected != 'true'
       with:
         path: |
           node_modules/.cache/tsbuildinfo
           tsconfig.tsbuildinfo
         key: ${{ runner.os }}-tsc-${{ hashFiles('**/tsconfig.json') }}-${{ hashFiles('**/*.ts') }}
-        restore-keys: ${{ env.SKIP_CACHE_RESTORE != 'true' && '${{ runner.os }}-tsc-${{ hashFiles(''**/tsconfig.json'') }}-
-          ${{ runner.os }}-tsc-' || '' }}
+        restore-keys: |
+          ${{ runner.os }}-tsc-${{ hashFiles('**/tsconfig.json') }}-
+          ${{ runner.os }}-tsc-
+          
+    # Cache TypeScript compilation results (save only, no restore)
+    - name: Cache TypeScript (save only)
+      uses: actions/cache@v4
+      if: steps.check_cache_skip.outputs.skip_cache_detected == 'true'
+      with:
+        path: |
+          node_modules/.cache/tsbuildinfo
+          tsconfig.tsbuildinfo
+        key: ${{ runner.os }}-tsc-${{ hashFiles('**/tsconfig.json') }}-${{ hashFiles('**/*.ts') }}
 
     - name: TypeScript type check
       run: npx tsc --noEmit
@@ -142,18 +154,38 @@ jobs:
     # Cache ESLint results
     - name: Cache ESLint results
       uses: actions/cache@v4
+      if: steps.check_cache_skip.outputs.skip_cache_detected != 'true'
       with:
         path: .eslintcache
         key: ${{ runner.os }}-eslint-${{ github.sha }}
-        restore-keys: ${{ env.SKIP_CACHE_RESTORE != 'true' && '${{ runner.os }}-eslint-' || '' }}
+        restore-keys: |
+          ${{ runner.os }}-eslint-
+          
+    # Cache ESLint results (save only, no restore)
+    - name: Cache ESLint results (save only)
+      uses: actions/cache@v4
+      if: steps.check_cache_skip.outputs.skip_cache_detected == 'true'
+      with:
+        path: .eslintcache
+        key: ${{ runner.os }}-eslint-${{ github.sha }}
 
     # Cache Prettier results
     - name: Cache Prettier results
       uses: actions/cache@v4
+      if: steps.check_cache_skip.outputs.skip_cache_detected != 'true'
       with:
         path: node_modules/.cache/prettier
         key: ${{ runner.os }}-prettier-${{ github.sha }}
-        restore-keys: ${{ env.SKIP_CACHE_RESTORE != 'true' && '${{ runner.os }}-prettier-' || '' }}
+        restore-keys: |
+          ${{ runner.os }}-prettier-
+          
+    # Cache Prettier results (save only, no restore)
+    - name: Cache Prettier results (save only)
+      uses: actions/cache@v4
+      if: steps.check_cache_skip.outputs.skip_cache_detected == 'true'
+      with:
+        path: node_modules/.cache/prettier
+        key: ${{ runner.os }}-prettier-${{ github.sha }}
 
     - name: Auto-fix ESLint and Prettier issues
       if: github.event_name == 'pull_request'
