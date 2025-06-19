@@ -41,6 +41,10 @@ jobs:
       contents: read
       security-events: write
       actions: read
+      
+    # Add a step to check for cache skip flag in commit message
+    env:
+      SKIP_CACHE_RESTORE: false
 
     steps:
       - name: Checkout repository
@@ -142,6 +146,10 @@ jobs:
     permissions:
       contents: read
       security-events: write
+      
+    # Add a step to check for cache skip flag in commit message
+    env:
+      SKIP_CACHE_RESTORE: false
 
     steps:
       - name: Checkout repository
@@ -166,12 +174,13 @@ jobs:
             ${{ runner.os }}-node-22.x-
 
       - name: Install dependencies
-        if: steps.node-modules-cache.outputs.cache-hit != 'true'
+        if: steps.node-modules-cache.outputs.cache-hit != 'true' || steps.check_cache_skip.outputs.skip_cache_detected == 'true'
         run: npm ci
 
       # Cache ESLint results
       - name: Cache ESLint results
         uses: actions/cache@v4
+        if: steps.check_cache_skip.outputs.skip_cache_detected != 'true' || steps.check_cache_skip.outputs.skip_cache_detected == 'true'
         with:
           path: .eslintcache
           key: ${{ runner.os }}-eslint-${{ github.sha }}
