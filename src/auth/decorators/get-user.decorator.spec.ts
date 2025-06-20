@@ -1,15 +1,5 @@
 import { ExecutionContext } from '@nestjs/common';
-import { GetUser } from './get-user.decorator';
-
-// Extract the factory function from the GetUser decorator for testing
-// This is a workaround since we can't directly access the factory function
-const getUserFactory = (data: string | undefined, ctx: ExecutionContext) => {
-  const request = ctx.switchToHttp().getRequest();
-  if (data) {
-    return request.user?.[data];
-  }
-  return request.user;
-};
+import { GetUser, getUserFactory } from './get-user.decorator';
 
 describe('GetUser Decorator', () => {
   // Define types for our mocks
