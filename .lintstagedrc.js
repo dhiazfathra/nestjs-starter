@@ -1,6 +1,6 @@
 module.exports = {
   // js not included as it uses require import
-  '*.{ts}': [
+  '*.ts': [
     'eslint --fix',
     (filenames) => {
       // Run tests related to changed files only if they are spec files

@@ -438,21 +438,40 @@ describe('EmailService', () => {
         data: { isRead: true },
       });
     });
+
+    it('should throw NotFoundException when email is not found', async () => {
+      const userId = 'user-id';
+      const emailId = 'email-id';
+
+      mockPrismaService.email.findFirst.mockResolvedValue(null);
+
+      await expect(service.markEmailAsRead(userId, emailId)).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(prismaService.email.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: emailId,
+          userId,
+        },
+      });
+      expect(prismaService.email.update).not.toHaveBeenCalled();
+    });
   });
 
   describe('markEmailAsDeleted', () => {
     it('should mark email as deleted', async () => {
       const userId = 'user-id';
       const emailId = 'email-id';
-
-      const existingEmail: Partial<Email> = {
+      const mockEmail = {
         id: emailId,
-        isDeleted: false,
+        userId,
+        isDeleted: true,
       };
 
-      const mockEmail: Partial<Email> = {
+      const existingEmail = {
         id: emailId,
-        isDeleted: true,
+        userId,
+        isDeleted: false,
         folder: 'TRASH',
       };
 
@@ -464,16 +483,34 @@ describe('EmailService', () => {
       const result = await service.markEmailAsDeleted(userId, emailId);
 
       expect(result).toEqual(mockEmail);
-      expect(mockPrismaService.email.findFirst).toHaveBeenCalledWith({
+      expect(prismaService.email.findFirst).toHaveBeenCalledWith({
         where: {
           id: emailId,
           userId,
         },
       });
-      expect(mockPrismaService.email.update).toHaveBeenCalledWith({
+      expect(prismaService.email.update).toHaveBeenCalledWith({
         where: { id: emailId },
         data: { isDeleted: true },
       });
+    });
+
+    it('should throw NotFoundException when email is not found', async () => {
+      const userId = 'user-id';
+      const emailId = 'email-id';
+
+      mockPrismaService.email.findFirst.mockResolvedValue(null);
+
+      await expect(service.markEmailAsDeleted(userId, emailId)).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(prismaService.email.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: emailId,
+          userId,
+        },
+      });
+      expect(prismaService.email.update).not.toHaveBeenCalled();
     });
   });
 
@@ -490,7 +527,7 @@ describe('EmailService', () => {
 
       const updatedMockEmail: Partial<Email> = {
         id: emailId,
-        folder, // Updated folder
+        folder, // New folder
       };
 
       mockPrismaService.email.findFirst.mockResolvedValue(mockEmail as Email);
@@ -512,6 +549,335 @@ describe('EmailService', () => {
         data: { folder },
       });
     });
+
+    it('should throw NotFoundException when email is not found', async () => {
+      const userId = 'user-id';
+      const emailId = 'email-id';
+      const folder = 'ARCHIVE';
+
+      mockPrismaService.email.findFirst.mockResolvedValue(null);
+
+      await expect(
+        service.moveEmailToFolder(userId, emailId, folder),
+      ).rejects.toThrow(NotFoundException);
+
+      expect(mockPrismaService.email.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: emailId,
+          userId,
+        },
+      });
+      expect(mockPrismaService.email.update).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('markEmailAsRead', () => {
+    it('should mark email as read', async () => {
+      const userId = 'user-id';
+      const emailId = 'email-id';
+
+      const existingEmail: Partial<Email> = {
+        id: emailId,
+        isRead: false,
+      };
+
+      const mockEmail: Partial<Email> = {
+        id: emailId,
+        isRead: true,
+      };
+
+      mockPrismaService.email.findFirst.mockResolvedValue(
+        existingEmail as Email,
+      );
+      mockPrismaService.email.update.mockResolvedValue(mockEmail as Email);
+
+      const result = await service.markEmailAsRead(userId, emailId);
+
+      expect(result).toEqual(mockEmail);
+      expect(mockPrismaService.email.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: emailId,
+          userId,
+        },
+      });
+      expect(mockPrismaService.email.update).toHaveBeenCalledWith({
+        where: { id: emailId },
+        data: { isRead: true },
+      });
+    });
+
+    it('should throw NotFoundException when email is not found', async () => {
+      const userId = 'user-id';
+      const emailId = 'email-id';
+
+      mockPrismaService.email.findFirst.mockResolvedValue(null);
+
+      await expect(service.markEmailAsRead(userId, emailId)).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(prismaService.email.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: emailId,
+          userId,
+        },
+      });
+      expect(prismaService.email.update).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('markEmailAsDeleted', () => {
+    it('should mark email as deleted', async () => {
+      const userId = 'user-id';
+      const emailId = 'email-id';
+      const mockEmail = {
+        id: emailId,
+        userId,
+        isDeleted: true,
+      };
+
+      const existingEmail = {
+        id: emailId,
+        userId,
+        isDeleted: false,
+        folder: 'TRASH',
+      };
+
+      mockPrismaService.email.findFirst.mockResolvedValue(
+        existingEmail as Email,
+      );
+      mockPrismaService.email.update.mockResolvedValue(mockEmail as Email);
+
+      const result = await service.markEmailAsDeleted(userId, emailId);
+
+      expect(result).toEqual(mockEmail);
+      expect(prismaService.email.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: emailId,
+          userId,
+        },
+      });
+      expect(prismaService.email.update).toHaveBeenCalledWith({
+        where: { id: emailId },
+        data: { isDeleted: true },
+      });
+    });
+
+    it('should throw NotFoundException when email is not found', async () => {
+      const userId = 'user-id';
+      const emailId = 'email-id';
+
+      mockPrismaService.email.findFirst.mockResolvedValue(null);
+
+      await expect(service.markEmailAsDeleted(userId, emailId)).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(prismaService.email.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: emailId,
+          userId,
+        },
+      });
+      expect(prismaService.email.update).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('moveEmailToFolder', () => {
+    it('should move email to specified folder', async () => {
+      const userId = 'user-id';
+      const emailId = 'email-id';
+      const folder = 'ARCHIVE';
+
+      const mockEmail: Partial<Email> = {
+        id: emailId,
+        folder: 'INBOX', // Original folder
+      };
+
+      const updatedMockEmail: Partial<Email> = {
+        id: emailId,
+        folder, // New folder
+      };
+
+      mockPrismaService.email.findFirst.mockResolvedValue(mockEmail as Email);
+      mockPrismaService.email.update.mockResolvedValue(
+        updatedMockEmail as Email,
+      );
+
+      const result = await service.moveEmailToFolder(userId, emailId, folder);
+
+      expect(result).toEqual(updatedMockEmail);
+      expect(mockPrismaService.email.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: emailId,
+          userId,
+        },
+      });
+      expect(mockPrismaService.email.update).toHaveBeenCalledWith({
+        where: { id: emailId },
+        data: { folder },
+      });
+    });
+
+    it('should throw NotFoundException when email is not found', async () => {
+      const userId = 'user-id';
+      const emailId = 'email-id';
+      const folder = 'ARCHIVE';
+
+      mockPrismaService.email.findFirst.mockResolvedValue(null);
+
+      await expect(
+        service.moveEmailToFolder(userId, emailId, folder),
+      ).rejects.toThrow(NotFoundException);
+
+      expect(mockPrismaService.email.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: emailId,
+          userId,
+        },
+      });
+      expect(mockPrismaService.email.update).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('fetchEmailsIMAP', () => {
+    it('should throw NotFoundException when user is not found', async () => {
+      const userId = 'user-id';
+      const options: GetEmailsDto = { folder: 'INBOX', page: 1, limit: 10 };
+
+      mockPrismaService.user.findUnique.mockResolvedValue(null);
+
+      await expect(service.fetchEmailsIMAP(userId, options)).rejects.toThrow(
+        NotFoundException,
+      );
+
+      expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({
+        where: { id: userId },
+      });
+    });
+
+    it('should throw NotFoundException when IMAP is not enabled', async () => {
+      const userId = 'user-id';
+      const options: GetEmailsDto = { folder: 'INBOX', page: 1, limit: 10 };
+
+      const mockUser = {
+        id: userId,
+        emailHost: 'imap.example.com',
+        emailPort: 993,
+        emailUsername: 'user@example.com',
+        emailPassword: 'password',
+        emailSecure: true,
+        imapEnabled: false, // IMAP not enabled
+        pop3Enabled: true,
+        smtpEnabled: true,
+      };
+
+      mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
+
+      await expect(service.fetchEmailsIMAP(userId, options)).rejects.toThrow(
+        'User not found or IMAP not enabled',
+      );
+
+      expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({
+        where: { id: userId },
+      });
+    });
+
+    it('should throw Error when email configuration is incomplete', async () => {
+      const userId = 'user-id';
+      const options: GetEmailsDto = { folder: 'INBOX', page: 1, limit: 10 };
+
+      const mockUser = {
+        id: userId,
+        emailHost: '', // Missing host
+        emailPort: 993,
+        emailUsername: 'user@example.com',
+        emailPassword: 'password',
+        emailSecure: true,
+        imapEnabled: true,
+        pop3Enabled: true,
+        smtpEnabled: true,
+      };
+
+      mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
+
+      await expect(service.fetchEmailsIMAP(userId, options)).rejects.toThrow(
+        'Email configuration is incomplete',
+      );
+
+      expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({
+        where: { id: userId },
+      });
+    });
+  });
+
+  describe('fetchEmailsPOP3', () => {
+    it('should throw NotFoundException when user is not found', async () => {
+      const userId = 'user-id';
+      const options: GetEmailsDto = { folder: 'INBOX', page: 1, limit: 10 };
+
+      mockPrismaService.user.findUnique.mockResolvedValue(null);
+
+      await expect(service.fetchEmailsPOP3(userId, options)).rejects.toThrow(
+        'POP3 is not enabled for this user',
+      );
+
+      expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({
+        where: { id: userId },
+      });
+    });
+
+    it('should throw Error when POP3 is not enabled', async () => {
+      const userId = 'user-id';
+      const options: GetEmailsDto = { folder: 'INBOX', page: 1, limit: 10 };
+
+      const mockUser = {
+        id: userId,
+        emailHost: 'pop.example.com',
+        emailPort: 995,
+        emailUsername: 'user@example.com',
+        emailPassword: 'password',
+        emailSecure: true,
+        imapEnabled: true,
+        pop3Enabled: false, // POP3 not enabled
+        smtpEnabled: true,
+      };
+
+      mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
+
+      await expect(service.fetchEmailsPOP3(userId, options)).rejects.toThrow(
+        'POP3 is not enabled for this user',
+      );
+
+      expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({
+        where: { id: userId },
+      });
+    });
+
+    it('should throw Error when email configuration is incomplete', async () => {
+      const userId = 'user-id';
+      const options: GetEmailsDto = { folder: 'INBOX', page: 1, limit: 10 };
+
+      const mockUser = {
+        id: userId,
+        emailHost: '', // Missing host
+        emailPort: 995,
+        emailUsername: 'user@example.com',
+        emailPassword: 'password',
+        emailSecure: true,
+        imapEnabled: true,
+        pop3Enabled: true,
+        smtpEnabled: true,
+      };
+
+      mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
+
+      await expect(service.fetchEmailsPOP3(userId, options)).rejects.toThrow(
+        'Email configuration is incomplete',
+      );
+
+      expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({
+        where: { id: userId },
+      });
+    });
   });
 
   describe('saveEmailsToDatabase', () => {
@@ -519,26 +885,40 @@ describe('EmailService', () => {
       const userId = 'user-id';
       const emails: Partial<Email>[] = [
         {
-          messageId: 'message-1',
-          from: 'sender1@example.com',
-          to: ['recipient1@example.com'],
-          subject: 'Test Email 1',
-        },
-        {
-          messageId: 'message-2',
-          from: 'sender2@example.com',
-          to: ['recipient2@example.com'],
-          subject: 'Test Email 2',
+          messageId: 'message-id-1',
+          from: 'sender@example.com',
+          to: ['recipient@example.com'],
+          subject: 'Test Subject',
+          text: 'Test content',
+          html: '<p>Test content</p>',
+          receivedAt: new Date(),
+          folder: 'INBOX',
         },
       ];
 
-      // Mock findFirst to return null (email doesn't exist)
       mockPrismaService.email.findFirst.mockResolvedValue(null);
+      mockPrismaService.email.create.mockResolvedValue({} as Email);
 
-      await service.saveEmailsToDatabase(emails as Email[], userId);
+      await service.saveEmailsToDatabase(emails as Partial<Email>[], userId);
 
-      expect(mockPrismaService.email.findFirst).toHaveBeenCalledTimes(2);
-      expect(mockPrismaService.email.create).toHaveBeenCalledTimes(2);
+      expect(mockPrismaService.email.findFirst).toHaveBeenCalledWith({
+        where: {
+          messageId: 'message-id-1',
+          userId,
+        },
+      });
+      expect(mockPrismaService.email.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          messageId: 'message-id-1',
+          from: 'sender@example.com',
+          to: ['recipient@example.com'],
+          subject: 'Test Subject',
+          text: 'Test content',
+          html: '<p>Test content</p>',
+          folder: 'INBOX',
+          userId,
+        }),
+      });
     });
   });
 });
