@@ -511,7 +511,7 @@ export class EmailService {
   /**
    * Save emails to database
    */
-  private async saveEmailsToDatabase(
+  public async saveEmailsToDatabase(
     emails: Partial<Email>[],
     userId: string,
   ): Promise<void> {

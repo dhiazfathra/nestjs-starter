@@ -509,6 +509,14 @@ describe('UsersService', () => {
         isDeleted: false,
         createdAt: new Date(),
         updatedAt: new Date(),
+        emailHost: 'smtp.example.com',
+        emailPassword: 'emailPassword',
+        emailPort: 587,
+        emailSecure: true,
+        emailUsername: 'test@example.com',
+        imapEnabled: false,
+        pop3Enabled: false,
+        smtpEnabled: true,
       };
 
       const updateWithEmailDto = {
@@ -567,6 +575,14 @@ describe('UsersService', () => {
         isDeleted: false,
         createdAt: new Date(),
         updatedAt: new Date(),
+        emailHost: 'smtp.example.com',
+        emailPassword: 'emailPassword',
+        emailPort: 587,
+        emailSecure: true,
+        emailUsername: 'test@example.com',
+        imapEnabled: false,
+        pop3Enabled: false,
+        smtpEnabled: true,
       };
 
       const updateWithPasswordDto = {
@@ -583,6 +599,14 @@ describe('UsersService', () => {
         isDeleted: false,
         createdAt: new Date(),
         updatedAt: new Date(),
+        emailHost: 'smtp.example.com',
+        emailPassword: 'emailPassword',
+        emailPort: 587,
+        emailSecure: true,
+        emailUsername: 'test@example.com',
+        imapEnabled: false,
+        pop3Enabled: false,
+        smtpEnabled: true,
       };
 
       // Mock the getOrSet method for findOne
@@ -607,6 +631,14 @@ describe('UsersService', () => {
         isDeleted: false,
         createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
+        emailHost: 'smtp.example.com',
+        emailPassword: 'emailPassword',
+        emailPort: 587,
+        emailSecure: true,
+        emailUsername: 'test@example.com',
+        imapEnabled: false,
+        pop3Enabled: false,
+        smtpEnabled: true,
       });
 
       // Verify cache invalidation
@@ -633,6 +665,14 @@ describe('UsersService', () => {
         isDeleted: false,
         createdAt: new Date(),
         updatedAt: new Date(),
+        emailHost: 'smtp.example.com',
+        emailPassword: 'emailPassword',
+        emailPort: 587,
+        emailSecure: true,
+        emailUsername: 'test@example.com',
+        imapEnabled: false,
+        pop3Enabled: false,
+        smtpEnabled: true,
       };
 
       // Mock the getOrSet method for findOne
@@ -716,9 +756,16 @@ describe('UsersService', () => {
         isDeleted: false,
         createdAt: new Date(),
         updatedAt: new Date(),
+        emailHost: 'smtp.example.com',
+        emailPassword: 'emailPassword',
+        emailPort: 587,
+        emailSecure: true,
+        emailUsername: 'test@example.com',
+        imapEnabled: false,
+        pop3Enabled: false,
+        smtpEnabled: true,
       };
 
-      // Mock the necessary methods
       jest.spyOn(prismaService.user, 'findFirst').mockResolvedValue(null); // No existing user
       jest
         .spyOn(prismaService.user, 'create')

@@ -55,6 +55,14 @@ describe('AuthService', () => {
         isDeleted: false,
         createdAt: new Date(),
         updatedAt: new Date(),
+        emailHost: 'smtp.example.com',
+        emailPassword: 'emailPassword',
+        emailPort: 587,
+        emailSecure: true,
+        emailUsername: 'test@example.com',
+        imapEnabled: false,
+        pop3Enabled: false,
+        smtpEnabled: true,
       };
 
       jest.spyOn(usersService, 'findByEmail').mockResolvedValue(user);
@@ -71,6 +79,14 @@ describe('AuthService', () => {
         isDeleted: false,
         createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
+        emailHost: 'smtp.example.com',
+        emailPassword: 'emailPassword',
+        emailPort: 587,
+        emailSecure: true,
+        emailUsername: 'test@example.com',
+        imapEnabled: false,
+        pop3Enabled: false,
+        smtpEnabled: true,
       });
       expect(usersService.findByEmail).toHaveBeenCalledWith('test@example.com');
       expect(bcrypt.compare).toHaveBeenCalledWith('password', 'hashedPassword');
@@ -97,6 +113,14 @@ describe('AuthService', () => {
         isDeleted: false,
         createdAt: new Date(),
         updatedAt: new Date(),
+        emailHost: 'smtp.example.com',
+        emailPassword: 'emailPassword',
+        emailPort: 587,
+        emailSecure: true,
+        emailUsername: 'test@example.com',
+        imapEnabled: false,
+        pop3Enabled: false,
+        smtpEnabled: true,
       };
 
       jest.spyOn(usersService, 'findByEmail').mockResolvedValue(user);
