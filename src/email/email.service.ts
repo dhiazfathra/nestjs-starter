@@ -29,7 +29,9 @@ export class EmailService {
 
     return {
       emailHost: user.emailHost,
-      emailPort: user.emailPort,
+      imapPort: user.imapPort,
+      pop3Port: user.pop3Port,
+      smtpPort: user.smtpPort,
       emailUsername: user.emailUsername,
       emailPassword: user.emailPassword,
       emailSecure: user.emailSecure,
@@ -50,7 +52,9 @@ export class EmailService {
       where: { id: userId },
       data: {
         emailHost: emailConfig.emailHost,
-        emailPort: emailConfig.emailPort,
+        imapPort: emailConfig.imapPort,
+        pop3Port: emailConfig.pop3Port,
+        smtpPort: emailConfig.smtpPort,
         emailUsername: emailConfig.emailUsername,
         emailPassword: emailConfig.emailPassword,
         emailSecure: emailConfig.emailSecure,
@@ -62,7 +66,9 @@ export class EmailService {
 
     return {
       emailHost: updatedUser.emailHost,
-      emailPort: updatedUser.emailPort,
+      imapPort: updatedUser.imapPort,
+      pop3Port: updatedUser.pop3Port,
+      smtpPort: updatedUser.smtpPort,
       emailUsername: updatedUser.emailUsername,
       emailPassword: updatedUser.emailPassword,
       emailSecure: updatedUser.emailSecure,
@@ -86,7 +92,9 @@ export class EmailService {
 
     if (
       !user.emailHost ||
-      !user.emailPort ||
+      !user.imapPort ||
+      !user.pop3Port ||
+      !user.smtpPort ||
       !user.emailUsername ||
       !user.emailPassword
     ) {
@@ -96,7 +104,7 @@ export class EmailService {
     // Create a transporter
     const transporter = nodemailer.createTransport({
       host: user.emailHost,
-      port: user.emailPort,
+      port: user.smtpPort,
       secure: user.emailSecure ?? true,
       auth: {
         user: user.emailUsername,
@@ -159,7 +167,9 @@ export class EmailService {
 
     if (
       !user.emailHost ||
-      !user.emailPort ||
+      !user.imapPort ||
+      !user.pop3Port ||
+      !user.smtpPort ||
       !user.emailUsername ||
       !user.emailPassword
     ) {
@@ -177,7 +187,7 @@ export class EmailService {
         user: user.emailUsername,
         password: user.emailPassword,
         host: user.emailHost,
-        port: user.emailPort,
+        port: user.imapPort,
         tls: user.emailSecure ?? true,
         tlsOptions: { rejectUnauthorized: false },
       });
@@ -324,11 +334,11 @@ export class EmailService {
 
       if (
         !user.emailHost ||
-        !user.emailPort ||
+        !user.pop3Port ||
         !user.emailUsername ||
         !user.emailPassword
       ) {
-        throw new Error('Email configuration is incomplete');
+        throw new Error('POP3 configuration is incomplete');
       }
 
       const folder = options.folder || 'INBOX';
@@ -343,7 +353,7 @@ export class EmailService {
         const end = start + limit - 1;
 
         // Create POP3 client
-        const client = new POP3Client(user.emailPort, user.emailHost, {
+        const client = new POP3Client(user.pop3Port, user.emailHost, {
           tlserrs: false,
           enabletls: user.emailSecure,
           debug: false,

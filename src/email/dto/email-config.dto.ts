@@ -14,12 +14,26 @@ export class EmailConfigDto {
   @IsOptional()
   emailHost?: string;
 
-  @ApiProperty({ description: 'Email server port', example: 587 })
+  @ApiProperty({ description: 'IMAP server port', example: 993 })
   @IsInt()
   @Min(1)
   @Max(65535)
   @IsOptional()
-  emailPort?: number;
+  imapPort?: number;
+
+  @ApiProperty({ description: 'POP3 server port', example: 995 })
+  @IsInt()
+  @Min(1)
+  @Max(65535)
+  @IsOptional()
+  pop3Port?: number;
+
+  @ApiProperty({ description: 'SMTP server port', example: 587 })
+  @IsInt()
+  @Min(1)
+  @Max(65535)
+  @IsOptional()
+  smtpPort?: number;
 
   @ApiProperty({
     description: 'Email username/address',

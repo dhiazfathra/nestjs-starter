@@ -8,7 +8,9 @@ const prisma = new PrismaClient();
  */
 interface EmailConfig {
   emailHost: string;
-  emailPort: number;
+  imapPort: number;
+  pop3Port: number;
+  smtpPort: number;
   emailUsername: string;
   emailPassword: string;
   emailSecure: boolean;
@@ -55,7 +57,9 @@ async function createUserIfNotExists(
         role,
         ...(emailConfig && {
           emailHost: emailConfig.emailHost,
-          emailPort: emailConfig.emailPort,
+          imapPort: emailConfig.imapPort,
+          pop3Port: emailConfig.pop3Port,
+          smtpPort: emailConfig.smtpPort,
           emailUsername: emailConfig.emailUsername,
           emailPassword: emailConfig.emailPassword,
           emailSecure: emailConfig.emailSecure,
@@ -89,7 +93,9 @@ async function main() {
   // Email configuration for admin
   const adminEmailConfig: EmailConfig = {
     emailHost: 'smtp.gmail.com',
-    emailPort: 465,
+    imapPort: 993,
+    pop3Port: 995,
+    smtpPort: 465,
     emailUsername: 'admin@example.com',
     emailPassword: 'app-specific-password',
     emailSecure: true,
@@ -101,7 +107,9 @@ async function main() {
   // Email configuration for regular user
   const userEmailConfig: EmailConfig = {
     emailHost: 'smtp.gmail.com',
-    emailPort: 465,
+    imapPort: 993,
+    pop3Port: 995,
+    smtpPort: 465,
     emailUsername: 'user@example.com',
     emailPassword: 'app-specific-password',
     emailSecure: true,

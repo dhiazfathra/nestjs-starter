@@ -60,7 +60,9 @@ describe('EmailService Additional Tests', () => {
       const mockUser = {
         id: userId,
         emailHost: 'imap.example.com',
-        emailPort: 993,
+        imapPort: 993,
+        pop3Port: 995,
+        smtpPort: 587,
         emailUsername: 'user@example.com',
         emailPassword: 'password',
         emailSecure: true,
@@ -233,7 +235,9 @@ describe('EmailService Additional Tests', () => {
       const mockUser = {
         id: userId,
         emailHost: 'imap.example.com',
-        emailPort: 993,
+        imapPort: 993,
+        pop3Port: 995,
+        smtpPort: 587,
         emailUsername: 'user@example.com',
         emailPassword: 'password',
         emailSecure: true,
@@ -260,7 +264,9 @@ describe('EmailService Additional Tests', () => {
       const mockUser = {
         id: userId,
         emailHost: '', // Missing host
-        emailPort: 993,
+        imapPort: 993,
+        pop3Port: 995,
+        smtpPort: 587,
         emailUsername: 'user@example.com',
         emailPassword: 'password',
         emailSecure: true,
@@ -286,7 +292,9 @@ describe('EmailService Additional Tests', () => {
       const mockUser = {
         id: userId,
         emailHost: 'imap.example.com',
-        emailPort: 993,
+        imapPort: 993,
+        pop3Port: 995,
+        smtpPort: 587,
         emailUsername: 'user@example.com',
         emailPassword: 'password',
         emailSecure: true,
@@ -327,7 +335,9 @@ describe('EmailService Additional Tests', () => {
       const mockUser = {
         id: userId,
         emailHost: 'imap.example.com',
-        emailPort: 993,
+        imapPort: 993,
+        pop3Port: 995,
+        smtpPort: 587,
         emailUsername: 'user@example.com',
         emailPassword: 'password',
         emailSecure: true,
@@ -380,7 +390,9 @@ describe('EmailService Additional Tests', () => {
     //   const mockUser = {
     //     id: userId,
     //     emailHost: 'pop3.example.com',
-    //     emailPort: 995,
+    //     imapPort: 993,
+    //     pop3Port: 995,
+    //     smtpPort: 587,
     //     emailUsername: 'user@example.com',
     //     emailPassword: 'password',
     //     emailSecure: true,
@@ -512,7 +524,9 @@ describe('EmailService Additional Tests', () => {
       const mockUser = {
         id: userId,
         emailHost: 'pop.example.com',
-        emailPort: 995,
+        imapPort: 993,
+        pop3Port: 995,
+        smtpPort: 587,
         emailUsername: 'user@example.com',
         emailPassword: 'password',
         emailSecure: true,
@@ -539,7 +553,9 @@ describe('EmailService Additional Tests', () => {
       const mockUser = {
         id: userId,
         emailHost: '', // Missing host
-        emailPort: 995,
+        imapPort: 993,
+        pop3Port: 995,
+        smtpPort: 587,
         emailUsername: 'user@example.com',
         emailPassword: 'password',
         emailSecure: true,
@@ -551,7 +567,7 @@ describe('EmailService Additional Tests', () => {
       mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
 
       await expect(service.fetchEmailsPOP3(userId, options)).rejects.toThrow(
-        'Email configuration is incomplete',
+        'Failed to fetch emails: POP3 configuration is incomplete',
       );
 
       expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({
@@ -566,7 +582,9 @@ describe('EmailService Additional Tests', () => {
       const mockUser = {
         id: userId,
         emailHost: 'pop.example.com',
-        emailPort: 995,
+        imapPort: 993,
+        pop3Port: 995,
+        smtpPort: 587,
         emailUsername: 'user@example.com',
         emailPassword: 'password',
         emailSecure: true,
@@ -605,7 +623,9 @@ describe('EmailService Additional Tests', () => {
       const mockUser = {
         id: userId,
         emailHost: 'pop.example.com',
-        emailPort: 995,
+        imapPort: 993,
+        pop3Port: 995,
+        smtpPort: 587,
         emailUsername: 'user@example.com',
         emailPassword: 'password',
         emailSecure: true,

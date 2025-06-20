@@ -68,7 +68,9 @@ describe('EmailService', () => {
       const mockUser = {
         id: userId,
         emailHost: 'smtp.example.com',
-        emailPort: 587,
+        imapPort: 993,
+        pop3Port: 995,
+        smtpPort: 587,
         emailUsername: 'test@example.com',
         emailPassword: 'password',
         emailSecure: true,
@@ -83,7 +85,9 @@ describe('EmailService', () => {
 
       expect(result).toEqual({
         emailHost: mockUser.emailHost,
-        emailPort: mockUser.emailPort,
+        imapPort: mockUser.imapPort,
+        pop3Port: mockUser.pop3Port,
+        smtpPort: mockUser.smtpPort,
         emailUsername: mockUser.emailUsername,
         emailPassword: mockUser.emailPassword,
         emailSecure: mockUser.emailSecure,
@@ -114,7 +118,9 @@ describe('EmailService', () => {
       const userId = 'user-id';
       const emailConfig: EmailConfigDto = {
         emailHost: 'smtp.updated.com',
-        emailPort: 465,
+        imapPort: 993,
+        pop3Port: 995,
+        smtpPort: 465,
         emailUsername: 'updated@example.com',
         emailPassword: 'newpassword',
         emailSecure: true,
@@ -155,7 +161,9 @@ describe('EmailService', () => {
       const mockUser = {
         id: userId,
         emailHost: 'smtp.example.com',
-        emailPort: 587,
+        imapPort: 993,
+        pop3Port: 995,
+        smtpPort: 587,
         emailUsername: 'sender@example.com',
         emailPassword: 'password',
         emailSecure: true,
@@ -241,7 +249,9 @@ describe('EmailService', () => {
       const mockUser = {
         id: userId,
         emailHost: 'smtp.example.com',
-        emailPort: 587,
+        imapPort: 993,
+        pop3Port: 995,
+        smtpPort: 587,
         emailUsername: 'sender@example.com',
         emailPassword: 'password',
         emailSecure: true,
@@ -269,7 +279,9 @@ describe('EmailService', () => {
       const mockUser = {
         id: userId,
         emailHost: null,
-        emailPort: null,
+        imapPort: null,
+        pop3Port: null,
+        smtpPort: null,
         emailUsername: null,
         emailPassword: null,
         smtpEnabled: true,
@@ -296,7 +308,9 @@ describe('EmailService', () => {
       const mockUser = {
         id: userId,
         emailHost: 'smtp.example.com',
-        emailPort: 587,
+        imapPort: 993,
+        pop3Port: 995,
+        smtpPort: 587,
         emailUsername: 'sender@example.com',
         emailPassword: 'password',
         emailSecure: true,
@@ -761,7 +775,9 @@ describe('EmailService', () => {
       const mockUser = {
         id: userId,
         emailHost: 'imap.example.com',
-        emailPort: 993,
+        imapPort: 993,
+        pop3Port: 995,
+        smtpPort: 587,
         emailUsername: 'user@example.com',
         emailPassword: 'password',
         emailSecure: true,
@@ -788,7 +804,9 @@ describe('EmailService', () => {
       const mockUser = {
         id: userId,
         emailHost: '', // Missing host
-        emailPort: 993,
+        imapPort: 993,
+        pop3Port: 995,
+        smtpPort: 587,
         emailUsername: 'user@example.com',
         emailPassword: 'password',
         emailSecure: true,
@@ -832,7 +850,9 @@ describe('EmailService', () => {
       const mockUser = {
         id: userId,
         emailHost: 'pop.example.com',
-        emailPort: 995,
+        imapPort: 993,
+        pop3Port: 995,
+        smtpPort: 587,
         emailUsername: 'user@example.com',
         emailPassword: 'password',
         emailSecure: true,
@@ -859,7 +879,9 @@ describe('EmailService', () => {
       const mockUser = {
         id: userId,
         emailHost: '', // Missing host
-        emailPort: 995,
+        imapPort: 993,
+        pop3Port: 995,
+        smtpPort: 587,
         emailUsername: 'user@example.com',
         emailPassword: 'password',
         emailSecure: true,
@@ -871,7 +893,7 @@ describe('EmailService', () => {
       mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
 
       await expect(service.fetchEmailsPOP3(userId, options)).rejects.toThrow(
-        'Email configuration is incomplete',
+        'Failed to fetch emails: POP3 configuration is incomplete',
       );
 
       expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({

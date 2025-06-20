@@ -56,7 +56,9 @@ describe('EmailController', () => {
       };
       const mockConfig: EmailConfigDto = {
         emailHost: 'smtp.example.com',
-        emailPort: 587,
+        imapPort: 993,
+        pop3Port: 995,
+        smtpPort: 587,
         emailUsername: 'test@example.com',
         emailPassword: 'password',
         emailSecure: true,
@@ -87,7 +89,9 @@ describe('EmailController', () => {
       };
       const emailConfig: EmailConfigDto = {
         emailHost: 'smtp.updated.com',
-        emailPort: 465,
+        imapPort: 993,
+        pop3Port: 995,
+        smtpPort: 587,
         emailUsername: 'updated@example.com',
         emailPassword: 'newpassword',
         emailSecure: true,

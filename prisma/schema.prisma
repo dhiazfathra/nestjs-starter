@@ -19,7 +19,9 @@ model User {
   isDeleted     Boolean  @default(false)
   emailHost     String?
   emailPassword String?
-  emailPort     Int?
+  imapPort      Int?
+  pop3Port      Int?
+  smtpPort      Int?
   emailSecure   Boolean? @default(true)
   emailUsername String?
   imapEnabled   Boolean? @default(false)
